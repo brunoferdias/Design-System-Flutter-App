@@ -1,0 +1,13 @@
+# Configuration for `flutter gen-l10n`.
+# Docs: https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization
+arb-dir: lib/l10n/arb
+template-arb-file: app_en.arb
+output-dir: lib/l10n/generated
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+# Fail the build when a locale is missing a translation instead of silently
+# falling back to English. Keeps every language a first-class citizen.
+untranslated-messages-file: l10n_missing.json
+required-resource-attributes: true
+use-escaping: true
