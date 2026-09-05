@@ -6,11 +6,6 @@ import 'package:design_system_flutter/design_system/foundations/ds_radii.dart';
 import 'package:design_system_flutter/design_system/foundations/ds_typography.dart';
 import 'package:flutter/widgets.dart';
 
-/// The fully resolved design system: every token, ready to be read.
-///
-/// This is deliberately *not* a Flutter `ThemeData` or `CupertinoThemeData`.
-/// Those are outputs; this is the input both of them are generated from, which
-/// is what stops the Material and Cupertino skins from drifting apart.
 @immutable
 final class DSThemeData {
   const DSThemeData({
@@ -22,7 +17,6 @@ final class DSThemeData {
     required this.elevation,
   });
 
-  /// Resolves every token from the three inputs a user can actually change.
   factory DSThemeData.resolve({
     required DesignLanguage designLanguage,
     required Brightness brightness,
@@ -58,16 +52,9 @@ final class DSThemeData {
 
   bool get isMaterial => designLanguage.isMaterial;
 
-  /// Picks between a Material and a Cupertino value.
-  ///
-  /// Used by components for the rare, genuinely cosmetic differences that do
-  /// not deserve a token of their own.
   T select<T>({required T material, required T cupertino}) =>
       isCupertino ? cupertino : material;
 
-  // Every other field is a pure function of these three, so comparing them is
-  // both correct and cheap — and it keeps `updateShouldNotify` from rebuilding
-  // the entire app on every frame.
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -80,20 +67,10 @@ final class DSThemeData {
   int get hashCode => Object.hash(designLanguage, brand, brightness);
 }
 
-/// Publishes [DSThemeData] to the widget tree.
-///
-/// Sits *above* both `MaterialApp` and `CupertinoApp` so that tokens survive the
-/// swap between them, and so that components can be tested without booting an
-/// entire app.
 final class DSTheme extends InheritedWidget {
   const DSTheme({required this.data, required super.child, super.key});
-
   final DSThemeData data;
 
-  /// The nearest design system theme.
-  ///
-  /// Throws in debug mode when the ancestor is missing, because silently
-  /// falling back to defaults is how design systems rot.
   static DSThemeData of(BuildContext context) {
     final DSTheme? theme = context
         .dependOnInheritedWidgetOfExactType<DSTheme>();
@@ -109,7 +86,6 @@ final class DSTheme extends InheritedWidget {
   bool updateShouldNotify(DSTheme oldWidget) => data != oldWidget.data;
 }
 
-/// `context.ds` — the single accessor every component uses.
 extension DSThemeContext on BuildContext {
   DSThemeData get ds => DSTheme.of(this);
 }

@@ -4,10 +4,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A surface that groups related content.
-///
-/// Shows the elevation token in action: on Material the card lifts with a
-/// shadow, on Cupertino it stays flat and is separated by a hairline instead.
 final class DSCard extends StatelessWidget {
   const DSCard({
     required this.child,
@@ -18,9 +14,6 @@ final class DSCard extends StatelessWidget {
 
   final Widget child;
   final EdgeInsetsGeometry padding;
-
-  /// When set, the whole card becomes a single tap target with the press
-  /// feedback of the active design language.
   final VoidCallback? onTap;
 
   @override
@@ -43,8 +36,6 @@ final class DSCard extends StatelessWidget {
 
     if (onTap == null) return surface;
 
-    // Material wants an ink splash clipped to the card; Cupertino wants the
-    // whole surface to dim. Same API for the caller, native feel on both.
     return ds.isCupertino
         ? CupertinoButton(
             onPressed: onTap,
@@ -55,11 +46,7 @@ final class DSCard extends StatelessWidget {
         : Material(
             color: Colors.transparent,
             borderRadius: radius,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: radius,
-              child: surface,
-            ),
+            child: InkWell(onTap: onTap, borderRadius: radius, child: surface),
           );
   }
 }

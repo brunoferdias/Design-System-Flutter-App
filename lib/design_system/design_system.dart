@@ -1,9 +1,3 @@
-/// Aurora DS — the public surface of the design system.
-///
-/// Feature code imports *only* this file. Nothing outside `lib/design_system`
-/// is allowed to import `package:flutter/material.dart` or
-/// `package:flutter/cupertino.dart` directly; that single rule is what keeps
-/// the two design languages swappable.
 library;
 
 export 'package:design_system_flutter/design_system/components/ds_avatar.dart';
@@ -13,6 +7,7 @@ export 'package:design_system_flutter/design_system/components/ds_card.dart';
 export 'package:design_system_flutter/design_system/components/ds_feedback.dart';
 export 'package:design_system_flutter/design_system/components/ds_gap.dart';
 export 'package:design_system_flutter/design_system/components/ds_list.dart';
+export 'package:design_system_flutter/design_system/components/ds_navigation_scaffold.dart';
 export 'package:design_system_flutter/design_system/components/ds_progress.dart';
 export 'package:design_system_flutter/design_system/components/ds_scaffold.dart';
 export 'package:design_system_flutter/design_system/components/ds_section_header.dart';

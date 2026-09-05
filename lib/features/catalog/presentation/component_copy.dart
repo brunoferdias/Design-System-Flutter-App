@@ -5,12 +5,6 @@ import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 
-/// Localized presentation data for the component catalogue.
-///
-/// The domain enum stays free of strings and icons; everything a *human* reads
-/// is assembled here, at the presentation boundary, from the active locale and
-/// the active design language. That is why adding Japanese later touches only
-/// the ARB files.
 extension ComponentCopy on ComponentId {
   String title(BuildContext context) {
     final l10n = context.l10n;
@@ -48,51 +42,41 @@ extension ComponentCopy on ComponentId {
     };
   }
 
-  /// The row icon, in the idiom of the active design language.
   IconData icon(DesignLanguage language) {
     final bool cupertino = language.isCupertino;
     return switch (this) {
-      ComponentId.button => cupertino
-          ? CupertinoIcons.rectangle_fill
-          : Icons.smart_button_outlined,
-      ComponentId.textField => cupertino
-          ? CupertinoIcons.textbox
-          : Icons.text_fields,
-      ComponentId.toggle => cupertino
-          ? CupertinoIcons.switch_camera
-          : Icons.toggle_on_outlined,
-      ComponentId.slider => cupertino
-          ? CupertinoIcons.slider_horizontal_3
-          : Icons.tune,
-      ComponentId.segmentedControl => cupertino
-          ? CupertinoIcons.square_split_1x2
-          : Icons.view_week_outlined,
-      ComponentId.card => cupertino
-          ? CupertinoIcons.rectangle_stack
-          : Icons.credit_card_outlined,
-      ComponentId.listSection => cupertino
-          ? CupertinoIcons.list_bullet
-          : Icons.list_alt_outlined,
-      ComponentId.avatarBadge => cupertino
-          ? CupertinoIcons.person_circle
-          : Icons.account_circle_outlined,
-      ComponentId.dialog => cupertino
-          ? CupertinoIcons.exclamationmark_bubble
-          : Icons.chat_bubble_outline,
-      ComponentId.actionSheet => cupertino
-          ? CupertinoIcons.square_arrow_up
-          : Icons.ios_share,
-      ComponentId.toast => cupertino
-          ? CupertinoIcons.bell
-          : Icons.notifications_none,
-      ComponentId.progress => cupertino
-          ? CupertinoIcons.arrow_2_circlepath
-          : Icons.hourglass_empty,
+      ComponentId.button =>
+        cupertino ? CupertinoIcons.rectangle_fill : Icons.smart_button_outlined,
+      ComponentId.textField =>
+        cupertino ? CupertinoIcons.textbox : Icons.text_fields,
+      ComponentId.toggle =>
+        cupertino ? CupertinoIcons.switch_camera : Icons.toggle_on_outlined,
+      ComponentId.slider =>
+        cupertino ? CupertinoIcons.slider_horizontal_3 : Icons.tune,
+      ComponentId.segmentedControl =>
+        cupertino ? CupertinoIcons.square_split_1x2 : Icons.view_week_outlined,
+      ComponentId.card =>
+        cupertino ? CupertinoIcons.rectangle_stack : Icons.credit_card_outlined,
+      ComponentId.listSection =>
+        cupertino ? CupertinoIcons.list_bullet : Icons.list_alt_outlined,
+      ComponentId.avatarBadge =>
+        cupertino
+            ? CupertinoIcons.person_circle
+            : Icons.account_circle_outlined,
+      ComponentId.dialog =>
+        cupertino
+            ? CupertinoIcons.exclamationmark_bubble
+            : Icons.chat_bubble_outline,
+      ComponentId.actionSheet =>
+        cupertino ? CupertinoIcons.square_arrow_up : Icons.ios_share,
+      ComponentId.toast =>
+        cupertino ? CupertinoIcons.bell : Icons.notifications_none,
+      ComponentId.progress =>
+        cupertino ? CupertinoIcons.arrow_2_circlepath : Icons.hourglass_empty,
     };
   }
 }
 
-/// Localized names for the gallery groups.
 extension ComponentGroupCopy on ComponentGroup {
   String title(BuildContext context) {
     final l10n = context.l10n;

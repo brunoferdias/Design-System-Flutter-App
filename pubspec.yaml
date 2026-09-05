@@ -15,15 +15,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # Cupertino (iOS) icon set — required by the Cupertino design language.
   cupertino_icons: ^1.0.8
-  # Declarative, URL-driven navigation.
   go_router: ^17.5.0
-  # Compile-safe dependency injection + reactive state management.
   flutter_riverpod: ^3.4.3
-  # Message formatting / pluralization used by the generated localizations.
   intl: any
-  # Key-value storage backing the settings repository.
   shared_preferences: ^2.5.5
 
 dev_dependencies:

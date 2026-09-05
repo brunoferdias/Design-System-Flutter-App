@@ -4,17 +4,10 @@ import 'package:design_system_flutter/design_system/foundations/ds_spacing.dart'
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/widgets.dart';
 
-/// The meaning a badge carries, which selects its colour pair.
 enum DSBadgeTone { neutral, brand, success, warning, danger, info }
 
-/// A small pill that labels the status of the thing next to it.
-///
-/// A deliberately *neutral* component: neither Material nor Cupertino specifies
-/// one, so the design system owns the whole definition and it renders
-/// identically on both platforms. Every design system needs a few of these.
 final class DSBadge extends StatelessWidget {
   const DSBadge(this.label, {this.tone = DSBadgeTone.neutral, super.key});
-
   final String label;
   final DSBadgeTone tone;
 

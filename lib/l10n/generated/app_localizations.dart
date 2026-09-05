@@ -933,6 +933,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Color role {role}, value {value}'**
   String a11yColorSwatch(String role, String value);
+
+  /// Dismisses the introduction and goes straight to the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get onboardingSkip;
+
+  /// Returns to the previous introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get onboardingBack;
+
+  /// Advances to the next introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// Finishes the introduction and opens the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Start exploring'**
+  String get onboardingStart;
+
+  /// Screen-reader progress announcement for the introduction.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String onboardingStepProgress(int current, int total);
+
+  /// Invitation shown above the interactive controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Go ahead, change something. The whole app follows along.'**
+  String get onboardingTryIt;
+
+  /// Label above the components that react to the choices.
+  ///
+  /// In en, this message translates to:
+  /// **'Live preview'**
+  String get onboardingLivePreview;
+
+  /// Title of the first introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Aurora DS'**
+  String get onboardingWelcomeTitle;
+
+  /// Body of the first introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'One design system that speaks two visual languages. Every colour, size and corner you are about to see is generated from a single set of design tokens.'**
+  String get onboardingWelcomeBody;
+
+  /// Title of the design language introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a design language'**
+  String get onboardingDesignLanguageTitle;
+
+  /// Body of the design language introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Material 3 is the Google design language, Cupertino is the Apple one. Automatic follows your device. The components below are literally the same code.'**
+  String get onboardingDesignLanguageBody;
+
+  /// Title of the appearance introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Make it yours'**
+  String get onboardingAppearanceTitle;
+
+  /// Body of the appearance introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Light or dark, plus one brand colour that the entire palette is derived from. Nothing here is hard-coded.'**
+  String get onboardingAppearanceBody;
+
+  /// Title of the language introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak your language'**
+  String get onboardingLanguageTitle;
+
+  /// Body of the language introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'English, Portuguese and German. Dates, numbers and currency follow the same choice — watch this text and the example below change.'**
+  String get onboardingLanguageBody;
+
+  /// Title of the final introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Where to go next'**
+  String get onboardingTourTitle;
+
+  /// Body of the final introduction step.
+  ///
+  /// In en, this message translates to:
+  /// **'Four tabs, four ways of looking at the same system.'**
+  String get onboardingTourBody;
+
+  /// Description of the Foundations tab in the tour.
+  ///
+  /// In en, this message translates to:
+  /// **'The raw tokens: colour, type, spacing, radius, elevation and motion.'**
+  String get onboardingTourFoundations;
+
+  /// Description of the Components tab in the tour.
+  ///
+  /// In en, this message translates to:
+  /// **'Every component, in both design languages, with the code to copy.'**
+  String get onboardingTourComponents;
+
+  /// Description of the Playground tab in the tour.
+  ///
+  /// In en, this message translates to:
+  /// **'A real booking screen assembled only from those components.'**
+  String get onboardingTourPlayground;
+
+  /// Description of the Settings tab in the tour.
+  ///
+  /// In en, this message translates to:
+  /// **'The four controls that drive this whole demonstration.'**
+  String get onboardingTourSettings;
+
+  /// Settings row that shows the onboarding again.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay the introduction'**
+  String get settingsReplayIntro;
 }
 
 class _AppLocalizationsDelegate

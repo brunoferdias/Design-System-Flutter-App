@@ -1,8 +1,7 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:design_system_flutter/features/playground/application/booking_controller.dart';
 import 'package:design_system_flutter/features/playground/domain/booking_draft.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final DateTime fixedNow = DateTime.utc(2026, 3, 1);
@@ -51,7 +50,8 @@ void main() {
       expect(
         draft(cabin: CabinClass.business).total,
         closeTo(
-          BookingDraft.baseFarePerPassenger * CabinClass.business.priceMultiplier,
+          BookingDraft.baseFarePerPassenger *
+              CabinClass.business.priceMultiplier,
           0.001,
         ),
       );
@@ -96,28 +96,37 @@ void main() {
       );
 
       controller.setPassengers(99);
-      expect(container.read(bookingProvider).passengers, BookingDraft.maxPassengers);
-
-      controller.setPassengers(-4);
-      expect(container.read(bookingProvider).passengers, BookingDraft.minPassengers);
-    });
-
-    test('submit reveals validation and reports whether the draft is valid', () {
-      final ProviderContainer container = makeContainer();
-      final BookingController controller = container.read(
-        bookingProvider.notifier,
+      expect(
+        container.read(bookingProvider).passengers,
+        BookingDraft.maxPassengers,
       );
 
-      expect(container.read(bookingProvider).showValidation, isFalse);
-      expect(controller.submit(), isFalse);
-      expect(container.read(bookingProvider).showValidation, isTrue);
-
-      controller
-        ..setName('Ada Lovelace')
-        ..setEmail('ada@example.com');
-
-      expect(controller.submit(), isTrue);
+      controller.setPassengers(-4);
+      expect(
+        container.read(bookingProvider).passengers,
+        BookingDraft.minPassengers,
+      );
     });
+
+    test(
+      'submit reveals validation and reports whether the draft is valid',
+      () {
+        final ProviderContainer container = makeContainer();
+        final BookingController controller = container.read(
+          bookingProvider.notifier,
+        );
+
+        expect(container.read(bookingProvider).showValidation, isFalse);
+        expect(controller.submit(), isFalse);
+        expect(container.read(bookingProvider).showValidation, isTrue);
+
+        controller
+          ..setName('Ada Lovelace')
+          ..setEmail('ada@example.com');
+
+        expect(controller.submit(), isTrue);
+      },
+    );
 
     test('reset clears the form but keeps the departure date', () {
       final ProviderContainer container = makeContainer();

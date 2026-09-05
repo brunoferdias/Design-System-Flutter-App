@@ -1,8 +1,26 @@
 import 'package:design_system_flutter/app/app.dart';
-import 'package:design_system_flutter/bootstrap.dart';
+import 'package:design_system_flutter/features/settings/application/settings_providers.dart';
+import 'package:design_system_flutter/features/settings/data/key_value_store.dart';
+import 'package:design_system_flutter/features/settings/data/settings_repository_impl.dart';
+import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
+import 'package:design_system_flutter/features/settings/domain/settings_repository.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The entry point stays deliberately empty.
-///
-/// All wiring lives in [bootstrap], which the integration tests and any future
-/// flavour entry point (`main_dev.dart`, `main_staging.dart`) reuse verbatim.
-Future<void> main() => bootstrap(builder: AuroraApp.new);
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final KeyValueStore store = await SharedPreferencesStore.open();
+  final SettingsRepository repository = SettingsRepositoryImpl(store);
+  final AppSettings settings = await repository.load();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        settingsRepositoryProvider.overrideWithValue(repository),
+        initialSettingsProvider.overrideWithValue(settings),
+      ],
+      child: const AuroraApp(),
+    ),
+  );
+}

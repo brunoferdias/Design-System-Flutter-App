@@ -4,30 +4,8 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// How loud a button is, expressed as intent rather than appearance.
-///
-/// The caller says *what the action means*; the design system decides whether
-/// that becomes a `FilledButton`, a `CupertinoButton.filled`, or something else
-/// entirely in the next redesign.
-enum DSButtonIntent {
-  /// The single most important action on the screen.
-  primary,
+enum DSButtonIntent { primary, secondary, tertiary, destructive }
 
-  /// A supporting action of equal importance but lower visual weight.
-  secondary,
-
-  /// A low-emphasis action, usually inline with text.
-  tertiary,
-
-  /// An action that destroys data. Always rendered in the danger colour.
-  destructive,
-}
-
-/// The design system's button.
-///
-/// This is the reference implementation for every other component in the
-/// system: one public API, one `switch` on the design language, zero platform
-/// checks anywhere above it.
 final class DSButton extends StatelessWidget {
   const DSButton({
     required this.label,
@@ -40,17 +18,10 @@ final class DSButton extends StatelessWidget {
   });
 
   final String label;
-
-  /// `null` disables the button — the idiomatic Flutter signal, kept as-is so
-  /// the component composes with `ValueListenableBuilder`, forms and the rest.
   final VoidCallback? onPressed;
   final DSButtonIntent intent;
   final IconData? icon;
-
-  /// Replaces the label with a platform-correct spinner and blocks input.
   final bool isLoading;
-
-  /// Stretches the button to the width of its parent.
   final bool expand;
 
   bool get _enabled => onPressed != null && !isLoading;
@@ -61,12 +32,8 @@ final class DSButton extends StatelessWidget {
     final Widget button = ds.isCupertino
         ? _buildCupertino(context)
         : _buildMaterial(context);
-    return expand
-        ? SizedBox(width: double.infinity, child: button)
-        : button;
+    return expand ? SizedBox(width: double.infinity, child: button) : button;
   }
-
-  // --- Material -------------------------------------------------------------
 
   Widget _buildMaterial(BuildContext context) {
     final ds = context.ds;
@@ -101,8 +68,6 @@ final class DSButton extends StatelessWidget {
     };
   }
 
-  // --- Cupertino ------------------------------------------------------------
-
   Widget _buildCupertino(BuildContext context) {
     final ds = context.ds;
     final VoidCallback? onPressed = _enabled ? this.onPressed : null;
@@ -129,8 +94,7 @@ final class DSButton extends StatelessWidget {
         padding: padding,
         child: _content(context, foreground: ds.colors.onDanger),
       ),
-      // Cupertino has no outlined button, so the system supplies one that still
-      // uses the platform's press behaviour (opacity fade, not a ripple).
+
       DSButtonIntent.secondary => CupertinoButton(
         onPressed: onPressed,
         borderRadius: radius,
@@ -155,8 +119,6 @@ final class DSButton extends StatelessWidget {
       ),
     };
   }
-
-  // --- Shared ---------------------------------------------------------------
 
   Widget _content(BuildContext context, {required Color foreground}) {
     final ds = context.ds;
@@ -192,7 +154,6 @@ final class DSButton extends StatelessWidget {
   }
 }
 
-/// A borderless, square icon-only action for app bars and list rows.
 final class DSIconButton extends StatelessWidget {
   const DSIconButton({
     required this.icon,
@@ -203,9 +164,6 @@ final class DSIconButton extends StatelessWidget {
 
   final IconData icon;
   final VoidCallback? onPressed;
-
-  /// Required: an icon with no visible label must always carry one for
-  /// assistive technology.
   final String semanticLabel;
 
   @override

@@ -1,7 +1,6 @@
-import 'package:flutter/painting.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:design_system_flutter/design_system/design_system.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DesignLanguagePreference.resolve', () {

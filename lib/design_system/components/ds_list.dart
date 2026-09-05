@@ -4,10 +4,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A row inside a [DSListSection].
-///
-/// Modelled as data rather than a widget so the section can render it as a
-/// `ListTile` or a `CupertinoListTile` without the caller ever knowing.
 @immutable
 final class DSListRow {
   const DSListRow({
@@ -23,34 +19,28 @@ final class DSListRow {
   final String title;
   final String? subtitle;
   final IconData? leading;
-
-  /// An interactive trailing widget, such as a `DSSwitch`.
   final Widget? trailing;
-
-  /// A short read-only value shown before the chevron — Cupertino's
-  /// `additionalInfo`, which Material renders as trailing text.
   final String? additionalInfo;
   final VoidCallback? onTap;
-
-  /// Tints the row in the danger colour, for actions like "Delete account".
   final bool isDestructive;
 }
 
-/// Grouped rows with an optional header and footer.
-///
-/// This is the component where the two platforms differ the most: Material
-/// draws a single card with full-bleed dividers, Cupertino draws an inset
-/// grouped section with indented separators and an uppercase header.
 final class DSListSection extends StatelessWidget {
-  const DSListSection({required this.rows, this.header, this.footer, super.key});
+  const DSListSection({
+    required this.rows,
+    this.header,
+    this.footer,
+    super.key,
+  });
 
   final List<DSListRow> rows;
   final String? header;
   final String? footer;
 
   @override
-  Widget build(BuildContext context) =>
-      context.ds.isCupertino ? _buildCupertino(context) : _buildMaterial(context);
+  Widget build(BuildContext context) => context.ds.isCupertino
+      ? _buildCupertino(context)
+      : _buildMaterial(context);
 
   Widget _buildCupertino(BuildContext context) {
     final ds = context.ds;
@@ -95,15 +85,10 @@ final class DSListSection extends StatelessWidget {
                 : Icon(row.leading, color: ds.colors.brand, size: 22),
             additionalInfo: row.additionalInfo == null
                 ? null
-                : DSText(
-                    row.additionalInfo!,
-                    color: ds.colors.onSurfaceMuted,
-                  ),
+                : _TrailingInfo(text: row.additionalInfo!),
             trailing:
                 row.trailing ??
-                (row.onTap == null
-                    ? null
-                    : const CupertinoListTileChevron()),
+                (row.onTap == null ? null : const CupertinoListTileChevron()),
             onTap: row.onTap,
             backgroundColor: ds.colors.surfaceElevated,
           ),
@@ -165,7 +150,6 @@ final class DSListSection extends StatelessWidget {
 
 final class _MaterialRow extends StatelessWidget {
   const _MaterialRow({required this.row});
-
   final DSListRow row;
 
   @override
@@ -179,7 +163,10 @@ final class _MaterialRow extends StatelessWidget {
       onTap: row.onTap,
       leading: row.leading == null
           ? null
-          : Icon(row.leading, color: row.isDestructive ? ds.colors.danger : null),
+          : Icon(
+              row.leading,
+              color: row.isDestructive ? ds.colors.danger : null,
+            ),
       title: DSText(row.title, role: DSTextRole.subtitle, color: titleColor),
       subtitle: row.subtitle == null
           ? null
@@ -190,10 +177,7 @@ final class _MaterialRow extends StatelessWidget {
             ),
       trailing: switch ((row.trailing, row.additionalInfo)) {
         (final Widget trailing?, _) => trailing,
-        (null, final String info?) => DSText(
-          info,
-          color: ds.colors.onSurfaceMuted,
-        ),
+        (null, final String info?) => _TrailingInfo(text: info),
         (null, null) when row.onTap != null => Icon(
           Icons.chevron_right,
           color: ds.colors.onSurfaceMuted,
@@ -202,4 +186,22 @@ final class _MaterialRow extends StatelessWidget {
       },
     );
   }
+}
+
+final class _TrailingInfo extends StatelessWidget {
+  const _TrailingInfo({required this.text});
+  static const double _maxWidth = 168;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => ConstrainedBox(
+    constraints: const BoxConstraints(maxWidth: _maxWidth),
+    child: DSText(
+      text,
+      role: DSTextRole.caption,
+      color: context.ds.colors.onSurfaceMuted,
+      textAlign: TextAlign.end,
+      maxLines: 2,
+    ),
+  );
 }

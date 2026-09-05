@@ -1,8 +1,7 @@
+import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:design_system_flutter/design_system/design_system.dart';
 
 import '../helpers/pump_app.dart';
 
@@ -62,17 +61,12 @@ void main() {
       }
     });
 
-    testWidgets('accepts input on both platforms', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('accepts input on both platforms', (WidgetTester tester) async {
       for (final DesignLanguage language in DesignLanguage.values) {
         String value = '';
         await pumpComponent(
           tester,
-          DSTextField(
-            label: 'Name',
-            onChanged: (String next) => value = next,
-          ),
+          DSTextField(label: 'Name', onChanged: (String next) => value = next),
           designLanguage: language,
         );
 
@@ -136,7 +130,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Saved'), findsOneWidget);
 
-      // 3s visible + the exit animation.
       await tester.pump(const Duration(seconds: 4));
       await tester.pumpAndSettle();
       expect(find.text('Saved'), findsNothing);

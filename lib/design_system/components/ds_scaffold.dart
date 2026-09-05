@@ -4,10 +4,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// The page frame: a background, a navigation bar and a body.
-///
-/// Screens in this app never import `material.dart` or `cupertino.dart`; they
-/// return a [DSScaffold] and let the design system pick the right chrome.
 final class DSScaffold extends StatelessWidget {
   const DSScaffold({
     required this.title,
@@ -55,11 +51,6 @@ final class DSScaffold extends StatelessWidget {
   }
 }
 
-/// Constrains and pads page content.
-///
-/// Reading columns are capped at [DSBreakpoints.maxContentWidth] and centred, so
-/// the same screen that works on a phone does not turn into an unreadable
-/// full-width band on a desktop window.
 final class DSPageBody extends StatelessWidget {
   const DSPageBody({
     required this.children,

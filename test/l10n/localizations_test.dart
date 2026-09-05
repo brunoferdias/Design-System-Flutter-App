@@ -1,8 +1,7 @@
+import 'package:design_system_flutter/l10n/generated/app_localizations.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
-import 'package:design_system_flutter/l10n/generated/app_localizations.dart';
 
 void main() {
   setUpAll(initializeDateFormatting);
@@ -18,24 +17,23 @@ void main() {
     expect(AppLocalizations.supportedLocales, hasLength(3));
   });
 
-  test('every locale is fully translated, with no English left behind', () async {
-    final AppLocalizations en = await load('en');
-    final AppLocalizations pt = await load('pt');
-    final AppLocalizations de = await load('de');
+  test(
+    'every locale is fully translated, with no English left behind',
+    () async {
+      final AppLocalizations en = await load('en');
+      final AppLocalizations pt = await load('pt');
+      final AppLocalizations de = await load('de');
 
-    // A representative sample across every screen. If a key were missing from
-    // an ARB file, `flutter gen-l10n` would have failed the build first; this
-    // guards against the subtler bug of a key copied over untranslated.
-    expect(pt.settingsTitle, isNot(en.settingsTitle));
-    expect(de.settingsTitle, isNot(en.settingsTitle));
-    expect(pt.navComponents, isNot(en.navComponents));
-    expect(de.foundationsTitle, isNot(en.foundationsTitle));
-    expect(pt.bookingSubmit, isNot(en.bookingSubmit));
+      expect(pt.settingsTitle, isNot(en.settingsTitle));
+      expect(de.settingsTitle, isNot(en.settingsTitle));
+      expect(pt.navComponents, isNot(en.navComponents));
+      expect(de.foundationsTitle, isNot(en.foundationsTitle));
+      expect(pt.bookingSubmit, isNot(en.bookingSubmit));
 
-    // Proper nouns are deliberately identical in all three.
-    expect(pt.appTitle, en.appTitle);
-    expect(de.designLanguageMaterial, en.designLanguageMaterial);
-  });
+      expect(pt.appTitle, en.appTitle);
+      expect(de.designLanguageMaterial, en.designLanguageMaterial);
+    },
+  );
 
   group('plurals', () {
     test('English selects the right form', () async {
@@ -73,7 +71,6 @@ void main() {
       final String en = (await load('en')).bookingTotalValue(1234.5);
       final String de = (await load('de')).bookingTotalValue(1234.5);
 
-      // English groups with commas, German with dots and a decimal comma.
       expect(en, contains('1,234.50'));
       expect(de, contains('1.234,50'));
     });

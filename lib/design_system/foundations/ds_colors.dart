@@ -3,12 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show ColorScheme;
 import 'package:flutter/painting.dart';
 
-/// Semantic colour roles.
-///
-/// Components never name a colour ("blue", "grey 200"); they name a *role*
-/// ("brand", "surfaceElevated", "danger"). That indirection is what lets the
-/// same widget tree render correctly in light, dark, Material and Cupertino
-/// without a single conditional inside the component itself.
 @immutable
 final class DSColors {
   const DSColors({
@@ -35,14 +29,6 @@ final class DSColors {
     required this.materialScheme,
   });
 
-  /// Derives every role from a single [seed], honouring the conventions of the
-  /// requested [language].
-  ///
-  /// Material roles come straight from the Material 3 tonal palette algorithm,
-  /// which guarantees the contrast ratios. Cupertino then overrides the handful
-  /// of roles where Apple's system colours are meaningfully different — grouped
-  /// backgrounds and hairline separators — while keeping the brand-derived
-  /// accents so the app still looks like itself on both platforms.
   factory DSColors.fromSeed({
     required Color seed,
     required Brightness brightness,
@@ -95,73 +81,27 @@ final class DSColors {
   }
 
   final Brightness brightness;
-
-  /// The primary action colour: filled buttons, selected states, focus rings.
   final Color brand;
-
-  /// Content drawn on top of [brand].
   final Color onBrand;
-
-  /// A low-emphasis wash of the brand, for selected rows and subtle chips.
   final Color brandSubtle;
-
-  /// Content drawn on top of [brandSubtle].
   final Color onBrandSubtle;
-
-  /// The page background.
   final Color surface;
-
-  /// Cards, sheets and grouped list rows — one step above [surface].
   final Color surfaceElevated;
-
-  /// Recessed areas such as track backgrounds and code blocks.
   final Color surfaceSunken;
-
-  /// Primary text and icons.
   final Color onSurface;
-
-  /// Secondary text, placeholders, disabled glyphs.
   final Color onSurfaceMuted;
-
-  /// Hairline dividers between rows.
   final Color separator;
-
-  /// Visible container borders.
   final Color border;
-
-  /// Destructive actions and validation errors.
   final Color danger;
-
-  /// Content drawn on top of [danger].
   final Color onDanger;
-
-  /// A low-emphasis wash of [danger].
   final Color dangerSubtle;
-
-  /// Positive confirmation.
   final Color success;
-
-  /// Non-blocking caution.
   final Color warning;
-
-  /// Neutral, informational emphasis.
   final Color info;
-
-  /// The wash painted behind modals.
   final Color scrim;
-
-  /// The colour shadows are tinted with.
   final Color shadow;
-
-  /// The underlying Material 3 scheme.
-  ///
-  /// Exposed so that `ThemeData` can be built from exactly the same source of
-  /// truth as the design system, instead of a parallel, drifting copy.
   final ColorScheme materialScheme;
 
-  /// The semantic roles, in the order they are presented in the Foundations
-  /// screen. Keeping the catalogue next to the definition means a new role can
-  /// never be added without also becoming documented in the app.
   Map<String, Color> get catalogue => <String, Color>{
     'brand': brand,
     'onBrand': onBrand,

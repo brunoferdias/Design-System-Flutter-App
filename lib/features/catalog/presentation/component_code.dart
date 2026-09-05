@@ -1,13 +1,9 @@
 import 'package:design_system_flutter/features/catalog/domain/component_id.dart';
 
-/// The snippet shown on each component's detail page.
-///
-/// Not localized — code is code in every language. Kept next to the demos so a
-/// change to a component's API is obvious the moment the sample stops matching
-/// the specimen above it.
 extension ComponentCode on ComponentId {
   String get codeSample => switch (this) {
-    ComponentId.button => '''
+    ComponentId.button =>
+      '''
 DSButton(
   label: l10n.bookingSubmit,
   intent: DSButtonIntent.primary,
@@ -16,7 +12,8 @@ DSButton(
   expand: true,
   onPressed: controller.submit,
 )''',
-    ComponentId.textField => '''
+    ComponentId.textField =>
+      '''
 DSTextField(
   label: l10n.bookingFieldEmail,
   placeholder: l10n.bookingFieldEmailHint,
@@ -24,13 +21,15 @@ DSTextField(
   errorText: form.emailError,
   onChanged: controller.onEmailChanged,
 )''',
-    ComponentId.toggle => '''
+    ComponentId.toggle =>
+      '''
 DSSwitch(
   value: settings.flexibleFare,
   semanticLabel: l10n.bookingFlexibleFare,
   onChanged: controller.setFlexibleFare,
 )''',
-    ComponentId.slider => '''
+    ComponentId.slider =>
+      '''
 DSSlider(
   value: passengers.toDouble(),
   min: 1,
@@ -39,7 +38,8 @@ DSSlider(
   semanticLabel: l10n.bookingPassengers,
   onChanged: (value) => controller.setPassengers(value.round()),
 )''',
-    ComponentId.segmentedControl => '''
+    ComponentId.segmentedControl =>
+      '''
 DSSegmentedControl<CabinClass>(
   value: form.cabin,
   onChanged: controller.setCabin,
@@ -49,7 +49,8 @@ DSSegmentedControl<CabinClass>(
     DSSegment(value: CabinClass.business, label: l10n.bookingCabinBusiness),
   ],
 )''',
-    ComponentId.card => '''
+    ComponentId.card =>
+      '''
 DSCard(
   onTap: () => context.goNamed(AppRoute.playground.routeName),
   child: Column(
@@ -61,7 +62,8 @@ DSCard(
     ],
   ),
 )''',
-    ComponentId.listSection => '''
+    ComponentId.listSection =>
+      '''
 DSListSection(
   header: l10n.settingsSectionAppearance,
   footer: l10n.settingsBrandColorDescription,
@@ -74,7 +76,8 @@ DSListSection(
     ),
   ],
 )''',
-    ComponentId.avatarBadge => '''
+    ComponentId.avatarBadge =>
+      '''
 Row(
   children: [
     const DSAvatar(name: 'Ada Lovelace', size: 56),
@@ -82,7 +85,8 @@ Row(
     DSBadge(l10n.showcaseEnabled, tone: DSBadgeTone.success),
   ],
 )''',
-    ComponentId.dialog => '''
+    ComponentId.dialog =>
+      '''
 final confirmed = await DSFeedback.confirm(
   context,
   title: l10n.bookingConfirmTitle,
@@ -91,7 +95,8 @@ final confirmed = await DSFeedback.confirm(
   cancelLabel: l10n.commonCancel,
 );
 if (!context.mounted || !confirmed) return;''',
-    ComponentId.actionSheet => '''
+    ComponentId.actionSheet =>
+      '''
 final choice = await DSFeedback.actionSheet<ShareTarget>(
   context,
   title: l10n.showcaseSheetTitle,
@@ -105,11 +110,11 @@ final choice = await DSFeedback.actionSheet<ShareTarget>(
     ),
   ],
 );''',
-    ComponentId.toast => '''
-// Rendered into the root Overlay, so it behaves identically under
-// MaterialApp and CupertinoApp.
+    ComponentId.toast =>
+      '''
 DSFeedback.toast(context, l10n.settingsResetDone);''',
-    ComponentId.progress => '''
+    ComponentId.progress =>
+      '''
 const DSProgressIndicator(size: 24)''',
   };
 }

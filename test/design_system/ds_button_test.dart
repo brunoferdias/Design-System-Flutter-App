@@ -1,8 +1,7 @@
+import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:design_system_flutter/design_system/design_system.dart';
 
 import '../helpers/pump_app.dart';
 
@@ -11,10 +10,7 @@ void main() {
     testWidgets('renders a Material button under the Material language', (
       WidgetTester tester,
     ) async {
-      await pumpComponent(
-        tester,
-        DSButton(label: 'Book', onPressed: () {}),
-      );
+      await pumpComponent(tester, DSButton(label: 'Book', onPressed: () {}));
 
       expect(find.byType(FilledButton), findsOneWidget);
       expect(find.byType(CupertinoButton), findsNothing);
@@ -80,11 +76,7 @@ void main() {
       int taps = 0;
       await pumpComponent(
         tester,
-        DSButton(
-          label: 'Book',
-          isLoading: true,
-          onPressed: () => taps++,
-        ),
+        DSButton(label: 'Book', isLoading: true, onPressed: () => taps++),
       );
 
       await tester.tap(find.byType(FilledButton), warnIfMissed: false);

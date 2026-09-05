@@ -3,12 +3,6 @@ import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// The token reference: colour, type, spacing, radius, elevation and motion,
-/// rendered live from the very objects the components consume.
-///
-/// Nothing on this screen is a picture of a token — every swatch, every bar and
-/// every animation reads the real value out of `context.ds`, so the
-/// documentation cannot drift from the implementation.
 final class FoundationsPage extends StatelessWidget {
   const FoundationsPage({super.key});
 
@@ -29,18 +23,18 @@ final class FoundationsPage extends StatelessWidget {
             color: ds.colors.onSurfaceMuted,
           ),
           const DSGap.md(),
-          Row(
+          Wrap(
+            spacing: DSSpacing.sm,
+            runSpacing: DSSpacing.sm,
             children: <Widget>[
               DSBadge(
                 ds.select(material: 'Material 3', cupertino: 'Cupertino'),
                 tone: DSBadgeTone.brand,
               ),
-              const DSGap.sm(),
               DSBadge(
                 ds.isDark ? l10n.themeModeDark : l10n.themeModeLight,
                 tone: DSBadgeTone.info,
               ),
-              const DSGap.sm(),
               DSBadge(ds.brand.name),
             ],
           ),
@@ -86,9 +80,6 @@ final class FoundationsPage extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-
-/// Formats a colour the way a designer would paste it into Figma.
 String _hex(Color color) =>
     '#${color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}';
 
@@ -125,7 +116,6 @@ final class _ColorTokens extends StatelessWidget {
 
 final class _Swatch extends StatelessWidget {
   const _Swatch({required this.role, required this.color});
-
   final String role;
   final Color color;
 
@@ -338,8 +328,6 @@ final class _ElevationTokens extends StatelessWidget {
   }
 }
 
-/// Tapping the card replays the motion tokens side by side, which is the only
-/// honest way to document easing.
 final class _MotionTokens extends StatefulWidget {
   const _MotionTokens();
 

@@ -1,11 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// The narrowest possible view of persistent storage.
-///
-/// Introducing this seam — rather than letting the repository talk to
-/// `SharedPreferences` directly — is what makes the repository testable without
-/// a platform channel, and what would let the same repository run on a web
-/// backend tomorrow.
 abstract interface class KeyValueStore {
   String? readString(String key);
 
@@ -14,11 +8,9 @@ abstract interface class KeyValueStore {
   Future<void> remove(String key);
 }
 
-/// The production implementation, backed by `shared_preferences`.
 final class SharedPreferencesStore implements KeyValueStore {
   const SharedPreferencesStore(this._preferences);
 
-  /// Opens the platform store. Called once, during bootstrap.
   static Future<SharedPreferencesStore> open() async =>
       SharedPreferencesStore(await SharedPreferences.getInstance());
 
@@ -35,7 +27,6 @@ final class SharedPreferencesStore implements KeyValueStore {
   Future<void> remove(String key) => _preferences.remove(key);
 }
 
-/// An in-memory store used by tests and by the widget previews.
 final class InMemoryKeyValueStore implements KeyValueStore {
   InMemoryKeyValueStore([Map<String, String>? seed])
     : _values = <String, String>{...?seed};

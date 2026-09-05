@@ -350,10 +350,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String bookingTotalValue(double amount) {
-    final intl.NumberFormat amountNumberFormat = intl.NumberFormat.currency(
-      locale: localeName,
-      decimalDigits: 2,
-    );
+    final intl.NumberFormat amountNumberFormat =
+        intl.NumberFormat.simpleCurrency(locale: localeName, decimalDigits: 2);
     final String amountString = amountNumberFormat.format(amount);
 
     return '$amountString';
@@ -492,4 +490,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String a11yColorSwatch(String role, String value) {
     return 'Color role $role, value $value';
   }
+
+  @override
+  String get onboardingSkip => 'Skip';
+
+  @override
+  String get onboardingBack => 'Back';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingStart => 'Start exploring';
+
+  @override
+  String onboardingStepProgress(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get onboardingTryIt =>
+      'Go ahead, change something. The whole app follows along.';
+
+  @override
+  String get onboardingLivePreview => 'Live preview';
+
+  @override
+  String get onboardingWelcomeTitle => 'Welcome to Aurora DS';
+
+  @override
+  String get onboardingWelcomeBody =>
+      'One design system that speaks two visual languages. Every colour, size and corner you are about to see is generated from a single set of design tokens.';
+
+  @override
+  String get onboardingDesignLanguageTitle => 'Choose a design language';
+
+  @override
+  String get onboardingDesignLanguageBody =>
+      'Material 3 is the Google design language, Cupertino is the Apple one. Automatic follows your device. The components below are literally the same code.';
+
+  @override
+  String get onboardingAppearanceTitle => 'Make it yours';
+
+  @override
+  String get onboardingAppearanceBody =>
+      'Light or dark, plus one brand colour that the entire palette is derived from. Nothing here is hard-coded.';
+
+  @override
+  String get onboardingLanguageTitle => 'Speak your language';
+
+  @override
+  String get onboardingLanguageBody =>
+      'English, Portuguese and German. Dates, numbers and currency follow the same choice — watch this text and the example below change.';
+
+  @override
+  String get onboardingTourTitle => 'Where to go next';
+
+  @override
+  String get onboardingTourBody =>
+      'Four tabs, four ways of looking at the same system.';
+
+  @override
+  String get onboardingTourFoundations =>
+      'The raw tokens: colour, type, spacing, radius, elevation and motion.';
+
+  @override
+  String get onboardingTourComponents =>
+      'Every component, in both design languages, with the code to copy.';
+
+  @override
+  String get onboardingTourPlayground =>
+      'A real booking screen assembled only from those components.';
+
+  @override
+  String get onboardingTourSettings =>
+      'The four controls that drive this whole demonstration.';
+
+  @override
+  String get settingsReplayIntro => 'Replay the introduction';
 }

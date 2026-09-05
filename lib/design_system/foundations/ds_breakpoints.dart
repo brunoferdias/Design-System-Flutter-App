@@ -1,15 +1,8 @@
-/// Layout breakpoints, aligned with the Material 3 window size classes.
-///
-/// The app uses them to pick a navigation pattern (tabs vs. rail) and to cap the
-/// width of reading columns on large screens.
 enum DSWindowSize {
-  /// Phones in portrait. Bottom navigation, single column.
   compact,
 
-  /// Small tablets, phones in landscape. Navigation rail, single column.
   medium,
 
-  /// Tablets and desktops. Navigation rail, centred content column.
   expanded;
 
   static DSWindowSize fromWidth(double width) {
@@ -24,12 +17,7 @@ enum DSWindowSize {
 }
 
 abstract final class DSBreakpoints {
-  /// Below this width the layout is a single, edge-to-edge column.
   static const double medium = 600;
-
-  /// Above this width there is room for a persistent navigation rail.
   static const double expanded = 960;
-
-  /// Text is never allowed to grow wider than this, for readability.
   static const double maxContentWidth = 720;
 }

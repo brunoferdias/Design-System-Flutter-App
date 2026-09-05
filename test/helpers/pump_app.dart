@@ -1,9 +1,3 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:design_system_flutter/app/app.dart';
 import 'package:design_system_flutter/app/application/app_providers.dart';
 import 'package:design_system_flutter/design_system/design_system.dart';
@@ -12,12 +6,12 @@ import 'package:design_system_flutter/features/settings/data/key_value_store.dar
 import 'package:design_system_flutter/features/settings/data/settings_repository_impl.dart';
 import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
 import 'package:design_system_flutter/l10n/generated/app_localizations.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-/// Mounts a single component under a fully configured design system.
-///
-/// Component tests get the real `DSTheme`, the real localizations and the real
-/// platform chrome — the only thing faked is the rest of the app. Anything less
-/// and the test would not be exercising what ships.
 Future<void> pumpComponent(
   WidgetTester tester,
   Widget child, {
@@ -62,18 +56,24 @@ Future<void> pumpComponent(
   );
 }
 
-/// Mounts the entire application on top of an in-memory store.
-///
-/// This is the same widget tree `main()` builds — only the two composition-root
-/// overrides differ, which is exactly the point of having a composition root.
+const AppSettings returningUser = AppSettings(
+  designLanguage: DesignLanguagePreference.system,
+  themeMode: AppThemeMode.system,
+  brand: DSBrand.aurora,
+  language: AppLanguage.system,
+  hasCompletedOnboarding: true,
+);
+
 Future<ProviderContainer> pumpApp(
   WidgetTester tester, {
-  AppSettings settings = AppSettings.defaults,
+  AppSettings settings = returningUser,
   bool platformIsApple = false,
   Size surfaceSize = const Size(420, 900),
 }) async {
-  await tester.binding.setSurfaceSize(surfaceSize);
-  addTearDown(() => tester.binding.setSurfaceSize(null));
+  tester.view
+    ..devicePixelRatio = 1.0
+    ..physicalSize = surfaceSize;
+  addTearDown(tester.view.reset);
 
   final SettingsRepositoryImpl repository = SettingsRepositoryImpl(
     InMemoryKeyValueStore(),
@@ -90,10 +90,7 @@ Future<ProviderContainer> pumpApp(
   addTearDown(container.dispose);
 
   await tester.pumpWidget(
-    UncontrolledProviderScope(
-      container: container,
-      child: const AuroraApp(),
-    ),
+    UncontrolledProviderScope(container: container, child: const AuroraApp()),
   );
   await tester.pumpAndSettle();
   return container;

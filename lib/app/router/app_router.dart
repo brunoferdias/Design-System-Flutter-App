@@ -6,7 +6,9 @@ import 'package:design_system_flutter/features/catalog/domain/component_id.dart'
 import 'package:design_system_flutter/features/catalog/presentation/component_detail_page.dart';
 import 'package:design_system_flutter/features/catalog/presentation/components_page.dart';
 import 'package:design_system_flutter/features/foundations/presentation/foundations_page.dart';
+import 'package:design_system_flutter/features/onboarding/presentation/onboarding_page.dart';
 import 'package:design_system_flutter/features/playground/presentation/playground_page.dart';
+import 'package:design_system_flutter/features/settings/application/settings_providers.dart';
 import 'package:design_system_flutter/features/settings/presentation/settings_page.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPage;
 import 'package:flutter/material.dart' show MaterialPage;
@@ -14,15 +16,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// The app's single [GoRouter].
-///
-/// Built once and never rebuilt: the router is infrastructure, not state.
-/// Anything that *does* change — the design language used for page transitions
-/// — is read lazily, per navigation, rather than baked in at construction.
 final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
   Page<void> adaptivePage(Widget child, GoRouterState state) {
-    // iOS users expect a horizontal push with an interactive back-swipe;
-    // Android users expect a vertical fade-through. Same route, right feel.
     return switch (ref.read(designLanguageProvider)) {
       DesignLanguage.cupertino => CupertinoPage<void>(
         key: state.pageKey,
@@ -35,10 +30,32 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
     };
   }
 
+  bool hasCompletedOnboarding() =>
+      ref.read(settingsProvider).hasCompletedOnboarding;
+
   return GoRouter(
-    initialLocation: AppRoute.foundations.path,
+    initialLocation: hasCompletedOnboarding()
+        ? AppRoute.foundations.path
+        : AppRoute.onboarding.path,
     debugLogDiagnostics: false,
+    redirect: (BuildContext context, GoRouterState state) {
+      final bool atOnboarding =
+          state.matchedLocation == AppRoute.onboarding.path;
+      if (!hasCompletedOnboarding() && !atOnboarding) {
+        return AppRoute.onboarding.path;
+      }
+      if (hasCompletedOnboarding() && atOnboarding) {
+        return AppRoute.foundations.path;
+      }
+      return null;
+    },
     routes: <RouteBase>[
+      GoRoute(
+        path: AppRoute.onboarding.path,
+        name: AppRoute.onboarding.routeName,
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            adaptivePage(const OnboardingPage(), state),
+      ),
       StatefulShellRoute.indexedStack(
         builder:
             (
@@ -66,16 +83,13 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
                     adaptivePage(const ComponentsPage(), state),
                 routes: <RouteBase>[
                   GoRoute(
-                    // Relative to the parent, which is what makes the detail
-                    // screen deep-linkable at /components/button.
                     path: ':componentId',
                     name: AppRoute.componentDetail.routeName,
                     pageBuilder: (BuildContext context, GoRouterState state) {
                       final ComponentId? id = ComponentId.fromSlug(
                         state.pathParameters['componentId'],
                       );
-                      // An unknown slug falls back to the list instead of
-                      // crashing: deep links are user input.
+
                       if (id == null) {
                         return adaptivePage(const ComponentsPage(), state);
                       }

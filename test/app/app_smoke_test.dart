@@ -1,11 +1,10 @@
+import 'package:design_system_flutter/design_system/design_system.dart';
+import 'package:design_system_flutter/features/settings/application/settings_providers.dart';
+import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:design_system_flutter/design_system/design_system.dart';
-import 'package:design_system_flutter/features/settings/application/settings_providers.dart';
-import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
 
 import '../helpers/pump_app.dart';
 
@@ -55,7 +54,6 @@ void main() {
     await tester.tap(find.text('Button').first);
     await tester.pumpAndSettle();
 
-    // The detail page shows the slug badge and the Dart sample.
     expect(find.text('button'), findsOneWidget);
     expect(find.text('Dart'), findsOneWidget);
   });
@@ -107,6 +105,11 @@ void main() {
     await tester.tap(find.text('Playground').last);
     await tester.pumpAndSettle();
 
+    await tester.scrollUntilVisible(
+      find.text('Book now'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.text('Book now'));
     await tester.pumpAndSettle();
 

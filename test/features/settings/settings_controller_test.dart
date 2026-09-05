@@ -1,12 +1,11 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:design_system_flutter/app/application/app_providers.dart';
 import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:design_system_flutter/features/settings/application/settings_providers.dart';
 import 'package:design_system_flutter/features/settings/data/key_value_store.dart';
 import 'package:design_system_flutter/features/settings/data/settings_repository_impl.dart';
 import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late InMemoryKeyValueStore store;
@@ -40,16 +39,19 @@ void main() {
     expect(container.read(settingsProvider).brand, DSBrand.forest);
   });
 
-  test('a change is reflected in state and written through to storage', () async {
-    final ProviderContainer container = makeContainer();
+  test(
+    'a change is reflected in state and written through to storage',
+    () async {
+      final ProviderContainer container = makeContainer();
 
-    container.read(settingsProvider.notifier).setThemeMode(AppThemeMode.dark);
+      container.read(settingsProvider.notifier).setThemeMode(AppThemeMode.dark);
 
-    expect(container.read(settingsProvider).themeMode, AppThemeMode.dark);
-    // The write is fire-and-forget, so let the microtask queue drain.
-    await Future<void>.delayed(Duration.zero);
-    expect(store.readString('settings.themeMode'), 'dark');
-  });
+      expect(container.read(settingsProvider).themeMode, AppThemeMode.dark);
+
+      await Future<void>.delayed(Duration.zero);
+      expect(store.readString('settings.themeMode'), 'dark');
+    },
+  );
 
   test('setting the same value again does not touch storage', () async {
     final ProviderContainer container = makeContainer();
@@ -70,8 +72,26 @@ void main() {
 
     await container.read(settingsProvider.notifier).reset();
 
-    expect(container.read(settingsProvider), AppSettings.defaults);
-    expect(store.readString('settings.brand'), isNull);
+    expect(container.read(settingsProvider).brand, AppSettings.defaults.brand);
+    expect(
+      container.read(settingsProvider).language,
+      AppSettings.defaults.language,
+    );
+    expect(store.readString('settings.brand'), DSBrand.aurora.name);
+  });
+
+  test('reset keeps the introduction from replaying', () async {
+    final ProviderContainer container = makeContainer(
+      initial: AppSettings.defaults.copyWith(
+        hasCompletedOnboarding: true,
+        brand: DSBrand.sunset,
+      ),
+    );
+
+    await container.read(settingsProvider.notifier).reset();
+
+    expect(container.read(settingsProvider).brand, AppSettings.defaults.brand);
+    expect(container.read(settingsProvider).hasCompletedOnboarding, isTrue);
   });
 
   group('derived providers', () {

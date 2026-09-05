@@ -147,5 +147,28 @@
 
   "a11yCurrentDesignLanguage": "Aktuelle Designsprache: {language}",
   "a11yToggleDesignLanguage": "Designsprache umschalten",
-  "a11yColorSwatch": "Farbrolle {role}, Wert {value}"
+  "a11yColorSwatch": "Farbrolle {role}, Wert {value}",
+
+  "onboardingSkip": "Überspringen",
+  "onboardingBack": "Zurück",
+  "onboardingNext": "Weiter",
+  "onboardingStart": "Loslegen",
+  "onboardingStepProgress": "Schritt {current} von {total}",
+  "onboardingTryIt": "Probiere es aus. Die ganze App zieht mit.",
+  "onboardingLivePreview": "Live-Vorschau",
+  "onboardingWelcomeTitle": "Willkommen bei Aurora DS",
+  "onboardingWelcomeBody": "Ein Designsystem, das zwei Designsprachen spricht. Jede Farbe, jede Größe und jede Ecke, die du gleich siehst, entsteht aus einem einzigen Satz von Design-Tokens.",
+  "onboardingDesignLanguageTitle": "Wähle eine Designsprache",
+  "onboardingDesignLanguageBody": "Material 3 ist die Designsprache von Google, Cupertino die von Apple. Automatisch folgt deinem Gerät. Die Komponenten unten sind buchstäblich derselbe Code.",
+  "onboardingAppearanceTitle": "Mach es zu deinem",
+  "onboardingAppearanceBody": "Hell oder dunkel, dazu eine Markenfarbe, aus der die gesamte Palette abgeleitet wird. Nichts davon steht fest im Code.",
+  "onboardingLanguageTitle": "Sprich deine Sprache",
+  "onboardingLanguageBody": "Englisch, Portugiesisch und Deutsch. Daten, Zahlen und Währung folgen derselben Auswahl — sieh zu, wie sich dieser Text und das Beispiel unten ändern.",
+  "onboardingTourTitle": "Wie es weitergeht",
+  "onboardingTourBody": "Vier Tabs, vier Blickwinkel auf dasselbe System.",
+  "onboardingTourFoundations": "Die rohen Tokens: Farbe, Typografie, Abstände, Radius, Elevation und Bewegung.",
+  "onboardingTourComponents": "Jede Komponente in beiden Designsprachen, mit Code zum Kopieren.",
+  "onboardingTourPlayground": "Ein echter Buchungsbildschirm, nur aus diesen Komponenten gebaut.",
+  "onboardingTourSettings": "Die vier Regler, die diese ganze Demonstration steuern.",
+  "settingsReplayIntro": "Einführung erneut ansehen"
 }

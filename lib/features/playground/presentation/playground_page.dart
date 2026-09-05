@@ -6,13 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// A believable product screen built only from design-system components.
-///
-/// The gallery proves the components exist; this proves they *compose*. It is
-/// also where the localization story stops being about strings: the passenger
-/// count is pluralized, the departure date is formatted per locale, and the
-/// total is rendered in the locale's currency convention — all by the generated
-/// `AppLocalizations`, none of it by hand.
 final class PlaygroundPage extends ConsumerWidget {
   const PlaygroundPage({super.key});
 
@@ -29,10 +22,7 @@ final class PlaygroundPage extends ConsumerWidget {
         children: <Widget>[
           DSText(l10n.bookingHeadline, role: DSTextRole.display),
           const DSGap.sm(),
-          DSText(
-            l10n.playgroundSubtitle,
-            color: ds.colors.onSurfaceMuted,
-          ),
+          DSText(l10n.playgroundSubtitle, color: ds.colors.onSurfaceMuted),
 
           const DSGap.xl(),
           DSTextField(
@@ -153,7 +143,6 @@ final class PlaygroundPage extends ConsumerWidget {
     );
   }
 
-  /// Validates, confirms, then reports — the whole flow in design-system terms.
   Future<void> _submit(BuildContext context, WidgetRef ref) async {
     final l10n = context.l10n;
     final BookingController controller = ref.read(bookingProvider.notifier);

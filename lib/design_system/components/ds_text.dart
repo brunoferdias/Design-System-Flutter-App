@@ -1,14 +1,17 @@
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/widgets.dart';
 
-/// The roles of the type scale, as a widget-facing enum.
-enum DSTextRole { display, headline, title, subtitle, body, bodyStrong, label, caption }
+enum DSTextRole {
+  display,
+  headline,
+  title,
+  subtitle,
+  body,
+  bodyStrong,
+  label,
+  caption,
+}
 
-/// Text that can only be styled through the type scale.
-///
-/// Screens never construct a raw [TextStyle]; they name a role and, optionally,
-/// a semantic colour. That constraint is the entire reason the app looks
-/// coherent in four theme combinations without per-screen tuning.
 final class DSText extends StatelessWidget {
   const DSText(
     this.data, {
@@ -22,8 +25,6 @@ final class DSText extends StatelessWidget {
 
   final String data;
   final DSTextRole role;
-
-  /// A colour from `context.ds.colors`. Defaults to the primary content colour.
   final Color? color;
   final TextAlign? textAlign;
   final int? maxLines;

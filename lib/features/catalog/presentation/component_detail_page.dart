@@ -6,14 +6,8 @@ import 'package:design_system_flutter/features/catalog/presentation/component_co
 import 'package:design_system_flutter/features/catalog/presentation/component_demo.dart';
 import 'package:flutter/widgets.dart';
 
-/// One component, shown three ways: described, demonstrated, and as the code a
-/// developer would actually write.
-///
-/// Deep-linkable at `/components/<slug>` — the same URL works on the web build
-/// and as an Android App Link, because the route is data, not a widget push.
 final class ComponentDetailPage extends StatelessWidget {
   const ComponentDetailPage({required this.componentId, super.key});
-
   final ComponentId componentId;
 
   @override
@@ -30,13 +24,14 @@ final class ComponentDetailPage extends StatelessWidget {
             color: ds.colors.onSurfaceMuted,
           ),
           const DSGap.md(),
-          Row(
+          Wrap(
+            spacing: DSSpacing.sm,
+            runSpacing: DSSpacing.sm,
             children: <Widget>[
               DSBadge(
                 ds.select(material: 'Material 3', cupertino: 'Cupertino'),
                 tone: DSBadgeTone.brand,
               ),
-              const DSGap.sm(),
               DSBadge(componentId.slug),
             ],
           ),
@@ -50,13 +45,8 @@ final class ComponentDetailPage extends StatelessWidget {
   }
 }
 
-/// A monospaced, horizontally scrollable code listing.
-///
-/// Horizontal scrolling is deliberate: wrapping code destroys its shape, and
-/// letting the page itself scroll sideways would break every other screen.
 final class _CodeBlock extends StatelessWidget {
   const _CodeBlock({required this.code});
-
   final String code;
 
   @override

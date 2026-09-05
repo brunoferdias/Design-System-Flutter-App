@@ -2,7 +2,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// Continuous or stepped selection within a range.
 final class DSSlider extends StatelessWidget {
   const DSSlider({
     required this.value,
@@ -18,9 +17,6 @@ final class DSSlider extends StatelessWidget {
   final ValueChanged<double>? onChanged;
   final double min;
   final double max;
-
-  /// Number of discrete steps. Material draws tick marks; Cupertino, which has
-  /// no notion of them, simply snaps.
   final int? divisions;
   final String? semanticLabel;
 
@@ -43,8 +39,7 @@ final class DSSlider extends StatelessWidget {
             max: max,
             divisions: divisions,
           );
-    // The underlying controls already expose the correct slider semantics and
-    // value; all the design system adds is a human-readable name for it.
+
     return semanticLabel == null
         ? control
         : Semantics(label: semanticLabel, child: control);

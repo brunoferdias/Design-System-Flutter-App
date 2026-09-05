@@ -1,18 +1,11 @@
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/widgets.dart';
 
-/// A circular monogram derived from a name.
-///
-/// Like `DSBadge` this is a system-owned primitive with no platform equivalent,
-/// which makes it a good place to show that "adaptive" does not have to mean
-/// "different everywhere".
 final class DSAvatar extends StatelessWidget {
   const DSAvatar({required this.name, this.size = 40, super.key});
-
   final String name;
   final double size;
 
-  /// Up to two uppercase initials, ignoring particles and extra whitespace.
   String get initials {
     final List<String> parts = name
         .trim()

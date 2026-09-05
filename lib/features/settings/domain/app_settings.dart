@@ -2,26 +2,15 @@ import 'package:design_system_flutter/design_system/foundations/ds_brand.dart';
 import 'package:design_system_flutter/design_system/foundations/ds_design_language.dart';
 import 'package:flutter/foundation.dart';
 
-/// How the app resolves light and dark.
-///
-/// Deliberately *not* Flutter's `ThemeMode`: the domain layer stays free of the
-/// UI framework, and the mapping happens once, at the presentation boundary.
 enum AppThemeMode { system, light, dark }
 
-/// The languages the app ships with.
-///
-/// A closed enum rather than a free-form `Locale` — a locale the app has no
-/// translations for should be unrepresentable.
 enum AppLanguage {
-  /// Follow the operating system, falling back to English.
   system(null),
   english('en'),
   portuguese('pt'),
   german('de');
 
   const AppLanguage(this.languageCode);
-
-  /// `null` for [AppLanguage.system].
   final String? languageCode;
 
   static AppLanguage fromCode(String? code) => values.firstWhere(
@@ -29,7 +18,6 @@ enum AppLanguage {
     orElse: () => AppLanguage.system,
   );
 
-  /// Every language the app can actually render, in menu order.
   static const List<AppLanguage> supported = <AppLanguage>[
     AppLanguage.english,
     AppLanguage.portuguese,
@@ -37,10 +25,6 @@ enum AppLanguage {
   ];
 }
 
-/// Everything the user can change about how the app looks and speaks.
-///
-/// An immutable value object: the controller replaces it wholesale, which makes
-/// state transitions trivially testable and impossible to mutate by accident.
 @immutable
 final class AppSettings {
   const AppSettings({
@@ -48,31 +32,36 @@ final class AppSettings {
     required this.themeMode,
     required this.brand,
     required this.language,
+    required this.hasCompletedOnboarding,
   });
 
-  /// What a fresh install looks like: everything follows the platform.
   static const AppSettings defaults = AppSettings(
     designLanguage: DesignLanguagePreference.system,
     themeMode: AppThemeMode.system,
     brand: DSBrand.aurora,
     language: AppLanguage.system,
+    hasCompletedOnboarding: false,
   );
 
   final DesignLanguagePreference designLanguage;
   final AppThemeMode themeMode;
   final DSBrand brand;
   final AppLanguage language;
+  final bool hasCompletedOnboarding;
 
   AppSettings copyWith({
     DesignLanguagePreference? designLanguage,
     AppThemeMode? themeMode,
     DSBrand? brand,
     AppLanguage? language,
+    bool? hasCompletedOnboarding,
   }) => AppSettings(
     designLanguage: designLanguage ?? this.designLanguage,
     themeMode: themeMode ?? this.themeMode,
     brand: brand ?? this.brand,
     language: language ?? this.language,
+    hasCompletedOnboarding:
+        hasCompletedOnboarding ?? this.hasCompletedOnboarding,
   );
 
   @override
@@ -82,14 +71,22 @@ final class AppSettings {
           other.designLanguage == designLanguage &&
           other.themeMode == themeMode &&
           other.brand == brand &&
-          other.language == language;
+          other.language == language &&
+          other.hasCompletedOnboarding == hasCompletedOnboarding;
 
   @override
-  int get hashCode => Object.hash(designLanguage, themeMode, brand, language);
+  int get hashCode => Object.hash(
+    designLanguage,
+    themeMode,
+    brand,
+    language,
+    hasCompletedOnboarding,
+  );
 
   @override
   String toString() =>
       'AppSettings(designLanguage: ${designLanguage.name}, '
       'themeMode: ${themeMode.name}, brand: ${brand.name}, '
-      'language: ${language.name})';
+      'language: ${language.name}, '
+      'hasCompletedOnboarding: $hasCompletedOnboarding)';
 }

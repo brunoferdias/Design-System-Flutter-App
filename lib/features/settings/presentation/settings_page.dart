@@ -1,19 +1,17 @@
+import 'package:design_system_flutter/app/router/app_routes.dart';
 import 'package:design_system_flutter/core/app_info.dart';
 import 'package:design_system_flutter/core/extensions/build_context_x.dart';
 import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:design_system_flutter/features/settings/application/settings_providers.dart';
 import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
+import 'package:design_system_flutter/features/settings/presentation/brand_picker.dart';
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-/// Where the user drives the whole demonstration.
-///
-/// Four controls, four rebuilds of the entire app: design language, theme,
-/// brand seed and language. Every one of them flows through the same
-/// `SettingsController` → `AppSettings` → `DSThemeData` pipeline.
 final class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -28,7 +26,6 @@ final class SettingsPage extends ConsumerWidget {
       title: l10n.settingsTitle,
       body: DSPageBody(
         children: <Widget>[
-          // --- Design language ---------------------------------------------
           DSSectionHeader(
             title: l10n.settingsSectionDesignLanguage,
             description: l10n.settingsDesignLanguageDescription,
@@ -67,7 +64,6 @@ final class SettingsPage extends ConsumerWidget {
             ),
           ),
 
-          // --- Appearance ---------------------------------------------------
           DSSectionHeader(title: l10n.settingsSectionAppearance),
           DSSegmentedControl<AppThemeMode>(
             value: settings.themeMode,
@@ -96,12 +92,11 @@ final class SettingsPage extends ConsumerWidget {
             color: ds.colors.onSurfaceMuted,
           ),
           const DSGap.md(),
-          _BrandPicker(
+          BrandPicker(
             selected: settings.brand,
             onSelected: controller.setBrand,
           ),
 
-          // --- Language -----------------------------------------------------
           DSSectionHeader(
             title: l10n.settingsSectionLanguage,
             description: l10n.settingsLanguageDescription,
@@ -122,7 +117,6 @@ final class SettingsPage extends ConsumerWidget {
             ],
           ),
 
-          // --- About --------------------------------------------------------
           DSSectionHeader(title: l10n.settingsSectionAbout),
           DSListSection(
             rows: <DSListRow>[
@@ -141,6 +135,17 @@ final class SettingsPage extends ConsumerWidget {
                   cupertino: CupertinoIcons.chevron_left_slash_chevron_right,
                 ),
                 onTap: () => _copyRepositoryUrl(context),
+              ),
+              DSListRow(
+                title: l10n.settingsReplayIntro,
+                leading: ds.select(
+                  material: Icons.slideshow_outlined,
+                  cupertino: CupertinoIcons.play_rectangle,
+                ),
+                onTap: () {
+                  controller.replayOnboarding();
+                  context.goNamed(AppRoute.onboarding.routeName);
+                },
               ),
               DSListRow(
                 title: l10n.settingsResetTitle,
@@ -190,77 +195,7 @@ final class SettingsPage extends ConsumerWidget {
     if (!confirmed) return;
     await controller.reset();
     if (!context.mounted) return;
-    // Read the localizations again: resetting may have changed the language.
+
     DSFeedback.toast(context, context.l10n.settingsResetDone);
-  }
-}
-
-/// The brand seed picker: four swatches, one of which is selected.
-final class _BrandPicker extends StatelessWidget {
-  const _BrandPicker({required this.selected, required this.onSelected});
-
-  final DSBrand selected;
-  final ValueChanged<DSBrand> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final ds = context.ds;
-    return Row(
-      children: <Widget>[
-        for (final DSBrand brand in DSBrand.values)
-          Expanded(
-            child: Semantics(
-              button: true,
-              selected: brand == selected,
-              label: _label(context, brand),
-              child: GestureDetector(
-                onTap: () => onSelected(brand),
-                behavior: HitTestBehavior.opaque,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: DSSpacing.xs,
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      AnimatedContainer(
-                        duration: DSMotion.fast,
-                        curve: DSMotion.standard,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: brand.seed,
-                          borderRadius: ds.radii.surfaceAll,
-                          border: Border.all(
-                            color: brand == selected
-                                ? ds.colors.onSurface
-                                : ds.colors.separator,
-                            width: brand == selected ? 3 : 1,
-                          ),
-                        ),
-                      ),
-                      const DSGap.xs(),
-                      DSText(
-                        _label(context, brand),
-                        role: DSTextRole.caption,
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  static String _label(BuildContext context, DSBrand brand) {
-    final l10n = context.l10n;
-    return switch (brand) {
-      DSBrand.aurora => l10n.brandColorAurora,
-      DSBrand.forest => l10n.brandColorForest,
-      DSBrand.sunset => l10n.brandColorSunset,
-      DSBrand.graphite => l10n.brandColorGraphite,
-    };
   }
 }

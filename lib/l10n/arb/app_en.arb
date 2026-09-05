@@ -216,7 +216,7 @@
   "bookingTotalValue": "{amount}",
   "@bookingTotalValue": {
     "description": "Total price formatted as currency for the active locale.",
-    "placeholders": { "amount": { "type": "double", "format": "currency", "optionalParameters": { "decimalDigits": 2 } } }
+    "placeholders": { "amount": { "type": "double", "format": "simpleCurrency", "optionalParameters": { "decimalDigits": 2 } } }
   },
   "bookingSubmit": "Book now",
   "@bookingSubmit": { "description": "Submits the booking form." },
@@ -317,5 +317,53 @@
       "role": { "type": "String" },
       "value": { "type": "String" }
     }
-  }
+  },
+
+  "onboardingSkip": "Skip",
+  "@onboardingSkip": { "description": "Dismisses the introduction and goes straight to the app." },
+  "onboardingBack": "Back",
+  "@onboardingBack": { "description": "Returns to the previous introduction step." },
+  "onboardingNext": "Next",
+  "@onboardingNext": { "description": "Advances to the next introduction step." },
+  "onboardingStart": "Start exploring",
+  "@onboardingStart": { "description": "Finishes the introduction and opens the app." },
+  "onboardingStepProgress": "Step {current} of {total}",
+  "@onboardingStepProgress": {
+    "description": "Screen-reader progress announcement for the introduction.",
+    "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "onboardingTryIt": "Go ahead, change something. The whole app follows along.",
+  "@onboardingTryIt": { "description": "Invitation shown above the interactive controls." },
+  "onboardingLivePreview": "Live preview",
+  "@onboardingLivePreview": { "description": "Label above the components that react to the choices." },
+  "onboardingWelcomeTitle": "Welcome to Aurora DS",
+  "@onboardingWelcomeTitle": { "description": "Title of the first introduction step." },
+  "onboardingWelcomeBody": "One design system that speaks two visual languages. Every colour, size and corner you are about to see is generated from a single set of design tokens.",
+  "@onboardingWelcomeBody": { "description": "Body of the first introduction step." },
+  "onboardingDesignLanguageTitle": "Choose a design language",
+  "@onboardingDesignLanguageTitle": { "description": "Title of the design language introduction step." },
+  "onboardingDesignLanguageBody": "Material 3 is the Google design language, Cupertino is the Apple one. Automatic follows your device. The components below are literally the same code.",
+  "@onboardingDesignLanguageBody": { "description": "Body of the design language introduction step." },
+  "onboardingAppearanceTitle": "Make it yours",
+  "@onboardingAppearanceTitle": { "description": "Title of the appearance introduction step." },
+  "onboardingAppearanceBody": "Light or dark, plus one brand colour that the entire palette is derived from. Nothing here is hard-coded.",
+  "@onboardingAppearanceBody": { "description": "Body of the appearance introduction step." },
+  "onboardingLanguageTitle": "Speak your language",
+  "@onboardingLanguageTitle": { "description": "Title of the language introduction step." },
+  "onboardingLanguageBody": "English, Portuguese and German. Dates, numbers and currency follow the same choice — watch this text and the example below change.",
+  "@onboardingLanguageBody": { "description": "Body of the language introduction step." },
+  "onboardingTourTitle": "Where to go next",
+  "@onboardingTourTitle": { "description": "Title of the final introduction step." },
+  "onboardingTourBody": "Four tabs, four ways of looking at the same system.",
+  "@onboardingTourBody": { "description": "Body of the final introduction step." },
+  "onboardingTourFoundations": "The raw tokens: colour, type, spacing, radius, elevation and motion.",
+  "@onboardingTourFoundations": { "description": "Description of the Foundations tab in the tour." },
+  "onboardingTourComponents": "Every component, in both design languages, with the code to copy.",
+  "@onboardingTourComponents": { "description": "Description of the Components tab in the tour." },
+  "onboardingTourPlayground": "A real booking screen assembled only from those components.",
+  "@onboardingTourPlayground": { "description": "Description of the Playground tab in the tour." },
+  "onboardingTourSettings": "The four controls that drive this whole demonstration.",
+  "@onboardingTourSettings": { "description": "Description of the Settings tab in the tour." },
+  "settingsReplayIntro": "Replay the introduction",
+  "@settingsReplayIntro": { "description": "Settings row that shows the onboarding again." }
 }

@@ -7,7 +7,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// One entry in a [DSFeedback.actionSheet].
 @immutable
 final class DSSheetAction<T> {
   const DSSheetAction({
@@ -23,13 +22,7 @@ final class DSSheetAction<T> {
   final bool isDestructive;
 }
 
-/// Everything the design system can say back to the user.
-///
-/// Grouped as static entry points rather than widgets because these are all
-/// imperative, `Future`-returning interactions. Screens `await` a plain `bool`
-/// or `T?` and never learn which framework drew the surface.
 abstract final class DSFeedback {
-  /// A blocking yes/no question. Resolves to `false` when dismissed.
   static Future<bool> confirm(
     BuildContext context, {
     required String title,
@@ -94,7 +87,6 @@ abstract final class DSFeedback {
     return result ?? false;
   }
 
-  /// A menu of contextual actions. Resolves to `null` when dismissed.
   static Future<T?> actionSheet<T>(
     BuildContext context, {
     required String title,
@@ -156,16 +148,9 @@ abstract final class DSFeedback {
     );
   }
 
-  /// Transient, non-blocking feedback.
-  ///
-  /// Material has `SnackBar` and Cupertino has nothing, so rather than making
-  /// half the app feel foreign the design system owns this one outright and
-  /// paints it into the root [Overlay]. It therefore works identically under
-  /// `MaterialApp` and `CupertinoApp`.
   static void toast(BuildContext context, String message) {
     final OverlayState overlay = Overlay.of(context, rootOverlay: true);
     final DSThemeData ds = context.ds;
-
     late final OverlayEntry entry;
     entry = OverlayEntry(
       builder: (BuildContext overlayContext) => DSTheme(
@@ -182,10 +167,8 @@ abstract final class DSFeedback {
   }
 }
 
-/// The toast surface: fades and slides in, waits, then removes itself.
 final class _DSToast extends StatefulWidget {
   const _DSToast({required this.message, required this.onDismissed});
-
   final String message;
   final VoidCallback onDismissed;
 
@@ -193,7 +176,8 @@ final class _DSToast extends StatefulWidget {
   State<_DSToast> createState() => _DSToastState();
 }
 
-class _DSToastState extends State<_DSToast> with SingleTickerProviderStateMixin {
+class _DSToastState extends State<_DSToast>
+    with SingleTickerProviderStateMixin {
   static const Duration _visibleFor = Duration(seconds: 3);
 
   late final AnimationController _controller = AnimationController(
@@ -270,7 +254,9 @@ class _DSToastState extends State<_DSToast> with SingleTickerProviderStateMixin 
                     widget.message,
                     textAlign: TextAlign.center,
                     style: ds.typography.body.copyWith(
-                      color: ds.isDark ? ds.colors.onSurface : ds.colors.surface,
+                      color: ds.isDark
+                          ? ds.colors.onSurface
+                          : ds.colors.surface,
                     ),
                   ),
                 ),

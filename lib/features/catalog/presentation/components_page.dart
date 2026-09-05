@@ -6,12 +6,6 @@ import 'package:design_system_flutter/features/catalog/presentation/component_co
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-/// The component gallery: every component in the system, grouped by purpose.
-///
-/// Note what this file does *not* import: neither `material.dart` nor
-/// `cupertino.dart`. A feature screen in this app can only reach for the design
-/// system, and that constraint is the reason the Material/Cupertino switch is a
-/// one-line setting instead of a rewrite.
 final class ComponentsPage extends StatelessWidget {
   const ComponentsPage({super.key});
 

@@ -4,12 +4,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
-/// Projects [DSThemeData] onto Flutter's Material theming API.
-///
-/// Nothing here invents a value: every colour, radius and text style is read
-/// back out of the design system. The Material theme is a *rendering* of the
-/// tokens, which is why swapping the brand seed restyles built-in widgets
-/// (dialogs, pickers, the keyboard toolbar) for free.
 abstract final class DSMaterialTheme {
   static ThemeData from(DSThemeData ds) {
     final ColorScheme scheme = ds.colors.materialScheme;
@@ -82,7 +76,9 @@ abstract final class DSMaterialTheme {
           borderRadius: radii.controlAll,
           borderSide: BorderSide(color: ds.colors.danger, width: 2),
         ),
-        labelStyle: ds.typography.body.copyWith(color: ds.colors.onSurfaceMuted),
+        labelStyle: ds.typography.body.copyWith(
+          color: ds.colors.onSurfaceMuted,
+        ),
         helperStyle: ds.typography.caption.copyWith(
           color: ds.colors.onSurfaceMuted,
         ),
@@ -131,7 +127,7 @@ abstract final class DSMaterialTheme {
         inactiveTrackColor: ds.colors.surfaceSunken,
         thumbColor: ds.colors.brand,
       ),
-      // Even in Material mode, iOS users expect an edge swipe to pop a route.
+
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: <TargetPlatform, PageTransitionsBuilder>{
           TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
@@ -155,11 +151,6 @@ abstract final class DSMaterialTheme {
     ),
   );
 
-  /// Maps the eight design-system roles onto Material's fifteen slots.
-  ///
-  /// Roles the system does not define are derived from the closest one rather
-  /// than left at Flutter's defaults, so no widget can accidentally reach for a
-  /// style that is not part of the system.
   static TextTheme _textTheme(DSThemeData ds) {
     final t = ds.typography;
     return TextTheme(

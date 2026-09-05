@@ -1,9 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:design_system_flutter/features/settings/data/key_value_store.dart';
 import 'package:design_system_flutter/features/settings/data/settings_repository_impl.dart';
 import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late InMemoryKeyValueStore store;
@@ -24,6 +23,7 @@ void main() {
       themeMode: AppThemeMode.dark,
       brand: DSBrand.sunset,
       language: AppLanguage.german,
+      hasCompletedOnboarding: true,
     );
 
     await repository.save(settings);
@@ -40,7 +40,7 @@ void main() {
 
     expect(loaded.designLanguage, AppSettings.defaults.designLanguage);
     expect(loaded.brand, AppSettings.defaults.brand);
-    // The valid key is still honoured — one bad value does not poison the rest.
+
     expect(loaded.themeMode, AppThemeMode.dark);
   });
 

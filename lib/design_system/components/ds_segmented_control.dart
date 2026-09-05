@@ -3,28 +3,24 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// One option in a [DSSegmentedControl].
 @immutable
 final class DSSegment<T> {
   const DSSegment({required this.value, required this.label, this.icon});
-
   final T value;
   final String label;
   final IconData? icon;
 }
 
-/// A compact, mutually exclusive choice.
-///
-/// Material's `SegmentedButton` and Cupertino's `CupertinoSlidingSegmentedControl`
-/// have incompatible APIs — one takes a `Set`, the other a `Map` — and the
-/// component is where that incompatibility stops.
 final class DSSegmentedControl<T extends Object> extends StatelessWidget {
   const DSSegmentedControl({
     required this.segments,
     required this.value,
     required this.onChanged,
     super.key,
-  }) : assert(segments.length > 1, 'A segmented control needs at least two options');
+  }) : assert(
+         segments.length > 1,
+         'A segmented control needs at least two options',
+       );
 
   final List<DSSegment<T>> segments;
   final T value;

@@ -147,5 +147,28 @@
 
   "a11yCurrentDesignLanguage": "Linguagem visual atual: {language}",
   "a11yToggleDesignLanguage": "Alternar linguagem visual",
-  "a11yColorSwatch": "Papel de cor {role}, valor {value}"
+  "a11yColorSwatch": "Papel de cor {role}, valor {value}",
+
+  "onboardingSkip": "Pular",
+  "onboardingBack": "Voltar",
+  "onboardingNext": "Avançar",
+  "onboardingStart": "Começar a explorar",
+  "onboardingStepProgress": "Passo {current} de {total}",
+  "onboardingTryIt": "Pode mexer. O app inteiro acompanha.",
+  "onboardingLivePreview": "Prévia ao vivo",
+  "onboardingWelcomeTitle": "Boas-vindas ao Aurora DS",
+  "onboardingWelcomeBody": "Um design system que fala duas linguagens visuais. Cada cor, tamanho e canto que você vai ver é gerado a partir de um único conjunto de tokens de design.",
+  "onboardingDesignLanguageTitle": "Escolha uma linguagem visual",
+  "onboardingDesignLanguageBody": "Material 3 é a linguagem visual do Google, Cupertino é a da Apple. Automático segue o seu dispositivo. Os componentes abaixo são literalmente o mesmo código.",
+  "onboardingAppearanceTitle": "Deixe do seu jeito",
+  "onboardingAppearanceBody": "Claro ou escuro, mais uma cor de marca da qual toda a paleta é derivada. Nada aqui é fixo no código.",
+  "onboardingLanguageTitle": "Fale o seu idioma",
+  "onboardingLanguageBody": "Inglês, português e alemão. Datas, números e moeda seguem a mesma escolha — veja este texto e o exemplo abaixo mudarem.",
+  "onboardingTourTitle": "Por onde seguir",
+  "onboardingTourBody": "Quatro abas, quatro formas de olhar para o mesmo sistema.",
+  "onboardingTourFoundations": "Os tokens crus: cor, tipografia, espaçamento, raio, elevação e movimento.",
+  "onboardingTourComponents": "Todos os componentes, nas duas linguagens visuais, com o código para copiar.",
+  "onboardingTourPlayground": "Uma tela real de reserva montada só com esses componentes.",
+  "onboardingTourSettings": "Os quatro controles que dirigem toda esta demonstração.",
+  "settingsReplayIntro": "Rever a introdução"
 }

@@ -5,15 +5,8 @@ import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 
-/// A live, interactive specimen of one component.
-///
-/// Every demo below is written the way a *feature* would write it: through the
-/// `DSxxx` API only, with no `if (Platform.isIOS)` and no direct Material or
-/// Cupertino imports beyond the two icon sets. If a demo needed an escape
-/// hatch, that would be a bug in the design system, not in the demo.
 final class ComponentDemo extends StatelessWidget {
   const ComponentDemo({required this.componentId, super.key});
-
   final ComponentId componentId;
 
   @override
@@ -32,10 +25,6 @@ final class ComponentDemo extends StatelessWidget {
     ComponentId.progress => const _ProgressDemo(),
   };
 }
-
-// -----------------------------------------------------------------------------
-// Actions
-// -----------------------------------------------------------------------------
 
 final class _ButtonDemo extends StatefulWidget {
   const _ButtonDemo();
@@ -83,21 +72,12 @@ class _ButtonDemoState extends State<_ButtonDemo> {
           onPressed: () {},
         ),
         const DSGap.md(),
-        // `onPressed: null` is the only way to disable a button — the same
-        // convention Flutter itself uses.
-        DSButton(
-          label: l10n.showcaseDisabled,
-          expand: true,
-          onPressed: null,
-        ),
+
+        DSButton(label: l10n.showcaseDisabled, expand: true, onPressed: null),
       ],
     );
   }
 }
-
-// -----------------------------------------------------------------------------
-// Inputs
-// -----------------------------------------------------------------------------
 
 final class _TextFieldDemo extends StatelessWidget {
   const _TextFieldDemo();
@@ -114,8 +94,7 @@ final class _TextFieldDemo extends StatelessWidget {
           helperText: l10n.showcaseSampleHelper,
         ),
         const DSGap.lg(),
-        // The error state is shown statically so it is always visible in the
-        // gallery — a specimen sheet, not a form.
+
         DSTextField(
           label: l10n.showcaseSampleLabel,
           placeholder: l10n.showcaseSamplePlaceholder,
@@ -131,10 +110,6 @@ final class _TextFieldDemo extends StatelessWidget {
     );
   }
 }
-
-// -----------------------------------------------------------------------------
-// Selection
-// -----------------------------------------------------------------------------
 
 final class _SwitchDemo extends StatefulWidget {
   const _SwitchDemo();
@@ -231,10 +206,6 @@ class _SegmentedDemoState extends State<_SegmentedDemo> {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Containment
-// -----------------------------------------------------------------------------
-
 final class _CardDemo extends StatelessWidget {
   const _CardDemo();
 
@@ -264,9 +235,7 @@ final class _CardDemo extends StatelessWidget {
             children: <Widget>[
               const DSAvatar(name: 'Ada Lovelace'),
               const DSGap.md(),
-              Expanded(
-                child: DSText(l10n.foundationsTapToCopy, maxLines: 2),
-              ),
+              Expanded(child: DSText(l10n.foundationsTapToCopy, maxLines: 2)),
             ],
           ),
         ),
@@ -350,10 +319,6 @@ final class _AvatarBadgeDemo extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Feedback
-// -----------------------------------------------------------------------------
-
 final class _DialogDemo extends StatelessWidget {
   const _DialogDemo();
 
@@ -372,8 +337,7 @@ final class _DialogDemo extends StatelessWidget {
           cancelLabel: l10n.commonCancel,
           isDestructive: true,
         );
-        // `context` crosses an async gap, so it has to be re-validated before
-        // being used again. The analyzer enforces this; the habit matters more.
+
         if (!context.mounted || !confirmed) return;
         DSFeedback.toast(context, l10n.commonDone);
       },

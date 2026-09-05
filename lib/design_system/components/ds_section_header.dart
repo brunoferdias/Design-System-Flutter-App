@@ -4,7 +4,6 @@ import 'package:design_system_flutter/design_system/foundations/ds_spacing.dart'
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/widgets.dart';
 
-/// A title plus an optional one-line explanation, used to open a section.
 final class DSSectionHeader extends StatelessWidget {
   const DSSectionHeader({
     required this.title,

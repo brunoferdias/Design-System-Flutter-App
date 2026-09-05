@@ -5,12 +5,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A single-line text input.
-///
-/// The two platforms disagree structurally here, not just cosmetically:
-/// Material floats the label inside the field, while Cupertino stacks a plain
-/// caption above it. The component absorbs that difference so screens can pass
-/// the same `label` / `errorText` pair either way.
 final class DSTextField extends StatelessWidget {
   const DSTextField({
     required this.label,
@@ -33,9 +27,6 @@ final class DSTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? placeholder;
   final String? helperText;
-
-  /// When non-null the field switches to its error appearance and the message
-  /// replaces [helperText].
   final String? errorText;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
@@ -54,7 +45,9 @@ final class DSTextField extends StatelessWidget {
     return Semantics(
       textField: true,
       label: label,
-      child: ds.isCupertino ? _buildCupertino(context) : _buildMaterial(context),
+      child: ds.isCupertino
+          ? _buildCupertino(context)
+          : _buildMaterial(context),
     );
   }
 
@@ -85,7 +78,11 @@ final class DSTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        DSText(label, role: DSTextRole.caption, color: ds.colors.onSurfaceMuted),
+        DSText(
+          label,
+          role: DSTextRole.caption,
+          color: ds.colors.onSurfaceMuted,
+        ),
         const DSGap.xs(),
         CupertinoTextField(
           controller: controller,
@@ -107,7 +104,9 @@ final class DSTextField extends StatelessWidget {
             color: ds.colors.onSurfaceMuted,
           ),
           decoration: BoxDecoration(
-            color: enabled ? ds.colors.surfaceElevated : ds.colors.surfaceSunken,
+            color: enabled
+                ? ds.colors.surfaceElevated
+                : ds.colors.surfaceSunken,
             borderRadius: ds.radii.controlAll,
             border: Border.all(color: borderColor),
           ),
