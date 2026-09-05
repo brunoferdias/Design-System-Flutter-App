@@ -6,20 +6,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final class PlaygroundPage extends ConsumerWidget {
+/// The third tab: a fake booking form that puts the components together in a
+/// real screen instead of showing them one by one.
+class PlaygroundPage extends ConsumerWidget {
   const PlaygroundPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final ds = context.ds;
-    final BookingDraft draft = ref.watch(bookingProvider);
-    final BookingController controller = ref.read(bookingProvider.notifier);
+    final draft = ref.watch(bookingProvider);
+    final controller = ref.read(bookingProvider.notifier);
 
     return DSScaffold(
       title: l10n.playgroundTitle,
       body: DSPageBody(
-        children: <Widget>[
+        children: [
           DSText(l10n.bookingHeadline, role: DSTextRole.display),
           const DSGap.sm(),
           DSText(l10n.playgroundSubtitle, color: ds.colors.onSurfaceMuted),
@@ -28,9 +30,10 @@ final class PlaygroundPage extends ConsumerWidget {
           DSTextField(
             label: l10n.bookingFieldName,
             placeholder: l10n.bookingFieldNameHint,
-            autofillHints: const <String>[AutofillHints.name],
+            autofillHints: const [AutofillHints.name],
             textInputAction: TextInputAction.next,
             onChanged: controller.setName,
+            // The error only appears after the first submit.
             errorText: draft.showValidation && !draft.isNameValid
                 ? l10n.bookingErrorNameRequired
                 : null,
@@ -40,7 +43,7 @@ final class PlaygroundPage extends ConsumerWidget {
             label: l10n.bookingFieldEmail,
             placeholder: l10n.bookingFieldEmailHint,
             keyboardType: TextInputType.emailAddress,
-            autofillHints: const <String>[AutofillHints.email],
+            autofillHints: const [AutofillHints.email],
             textInputAction: TextInputAction.done,
             onChanged: controller.setEmail,
             errorText: draft.showValidation && !draft.isEmailValid
@@ -54,16 +57,16 @@ final class PlaygroundPage extends ConsumerWidget {
           DSSegmentedControl<CabinClass>(
             value: draft.cabin,
             onChanged: controller.setCabin,
-            segments: <DSSegment<CabinClass>>[
-              DSSegment<CabinClass>(
+            segments: [
+              DSSegment(
                 value: CabinClass.economy,
                 label: l10n.bookingCabinEconomy,
               ),
-              DSSegment<CabinClass>(
+              DSSegment(
                 value: CabinClass.premium,
                 label: l10n.bookingCabinPremium,
               ),
-              DSSegment<CabinClass>(
+              DSSegment(
                 value: CabinClass.business,
                 label: l10n.bookingCabinBusiness,
               ),
@@ -73,7 +76,7 @@ final class PlaygroundPage extends ConsumerWidget {
           const DSGap.xl(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
+            children: [
               DSText(l10n.bookingPassengers, role: DSTextRole.subtitle),
               DSText(
                 l10n.bookingPassengerCount(draft.passengers),
@@ -85,15 +88,15 @@ final class PlaygroundPage extends ConsumerWidget {
             value: draft.passengers.toDouble(),
             min: BookingDraft.minPassengers.toDouble(),
             max: BookingDraft.maxPassengers.toDouble(),
+            // One step per passenger.
             divisions: BookingDraft.maxPassengers - BookingDraft.minPassengers,
             semanticLabel: l10n.bookingPassengers,
-            onChanged: (double value) =>
-                controller.setPassengers(value.round()),
+            onChanged: (value) => controller.setPassengers(value.round()),
           ),
 
           const DSGap.lg(),
           DSListSection(
-            rows: <DSListRow>[
+            rows: [
               DSListRow(
                 title: l10n.bookingDeparture,
                 additionalInfo: l10n.bookingDepartureValue(draft.departure),
@@ -104,17 +107,19 @@ final class PlaygroundPage extends ConsumerWidget {
                 trailing: DSSwitch(
                   value: draft.flexibleFare,
                   semanticLabel: l10n.bookingFlexibleFare,
-                  onChanged: (bool enabled) =>
-                      controller.setFlexibleFare(enabled: enabled),
+                  onChanged: (enabled) {
+                    controller.setFlexibleFare(enabled: enabled);
+                  },
                 ),
               ),
             ],
           ),
 
+          // The total is worked out by the draft itself, not here.
           DSCard(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
+              children: [
                 DSText(l10n.bookingTotal, role: DSTextRole.subtitle),
                 DSText(
                   l10n.bookingTotalValue(draft.total),
@@ -143,24 +148,22 @@ final class PlaygroundPage extends ConsumerWidget {
     );
   }
 
+  /// Validates the form, asks for confirmation, then celebrates.
   Future<void> _submit(BuildContext context, WidgetRef ref) async {
     final l10n = context.l10n;
-    final BookingController controller = ref.read(bookingProvider.notifier);
+    final controller = ref.read(bookingProvider.notifier);
+
+    // submit() also turns the error messages on, so an invalid form just
+    // lights up and we stop here.
     if (!controller.submit()) return;
 
-    final BookingDraft draft = ref.read(bookingProvider);
-    final String cabin = switch (draft.cabin) {
-      CabinClass.economy => l10n.bookingCabinEconomy,
-      CabinClass.premium => l10n.bookingCabinPremium,
-      CabinClass.business => l10n.bookingCabinBusiness,
-    };
-
-    final bool confirmed = await DSFeedback.confirm(
+    final draft = ref.read(bookingProvider);
+    final confirmed = await DSFeedback.confirm(
       context,
       title: l10n.bookingConfirmTitle,
       message: l10n.bookingConfirmMessage(
         draft.passengers,
-        cabin,
+        _cabinLabel(context, draft.cabin),
         draft.name.trim(),
       ),
       confirmLabel: l10n.commonConfirm,
@@ -169,5 +172,18 @@ final class PlaygroundPage extends ConsumerWidget {
 
     if (!context.mounted || !confirmed) return;
     DSFeedback.toast(context, l10n.bookingSuccess(draft.name.trim()));
+  }
+}
+
+String _cabinLabel(BuildContext context, CabinClass cabin) {
+  final l10n = context.l10n;
+
+  switch (cabin) {
+    case CabinClass.economy:
+      return l10n.bookingCabinEconomy;
+    case CabinClass.premium:
+      return l10n.bookingCabinPremium;
+    case CabinClass.business:
+      return l10n.bookingCabinBusiness;
   }
 }

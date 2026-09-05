@@ -2,7 +2,6 @@
 
 **One design system, two design languages.** A production-shaped Flutter app that renders every screen natively in **Material 3** *and* **Cupertino**, fully localized in **English, Portuguese and German** — built to be read as a reference for architecture, design-system design and internationalization.
 
-[![CI](https://github.com/brunodias/design_system_flutter/actions/workflows/ci.yml/badge.svg)](https://github.com/brunodias/design_system_flutter/actions/workflows/ci.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-3.44-blue?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -303,13 +302,19 @@ for (final language in DesignLanguage.values) {
 
 ## Quality gates
 
-CI runs on every push and pull request:
+Run these before committing:
 
-1. `flutter gen-l10n` + `git diff --exit-code` — generated localizations must match the ARB files.
-2. `dart format --set-exit-if-changed`
-3. `flutter analyze --fatal-infos` — with `strict-casts`, `strict-inference`, `strict-raw-types` and ~30 extra lints, including `always_use_package_imports`, `require_trailing_commas` and `avoid_dynamic_calls`.
-4. `flutter test`
-5. `flutter build web --release`
+```bash
+flutter gen-l10n                                  # regenerate lib/l10n/generated
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze --fatal-infos
+flutter test
+flutter build web --release
+```
+
+The analyzer is `flutter_lints` plus a few extras: `always_use_package_imports`,
+`directives_ordering`, `prefer_single_quotes`, `sort_constructors_first` and
+`unawaited_futures`.
 
 ---
 

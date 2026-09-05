@@ -4,73 +4,74 @@ import 'package:design_system_flutter/features/settings/data/key_value_store.dar
 import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
 import 'package:design_system_flutter/features/settings/domain/settings_repository.dart';
 
-final class SettingsRepositoryImpl implements SettingsRepository {
+/// Saves and reads [AppSettings] as plain strings.
+///
+/// Every enum is stored by its `name` ("dark", "forest", ...), which keeps the
+/// stored data readable and survives reordering the enum values.
+class SettingsRepositoryImpl implements SettingsRepository {
   const SettingsRepositoryImpl(this._store);
+
   static const String _designLanguageKey = 'settings.designLanguage';
   static const String _themeModeKey = 'settings.themeMode';
   static const String _brandKey = 'settings.brand';
   static const String _languageKey = 'settings.language';
   static const String _onboardingKey = 'settings.hasCompletedOnboarding';
-  static const String _onboardingCompletedValue = 'true';
-
-  static const List<String> _allKeys = <String>[
-    _designLanguageKey,
-    _themeModeKey,
-    _brandKey,
-    _languageKey,
-    _onboardingKey,
-  ];
 
   final KeyValueStore _store;
 
   @override
-  Future<AppSettings> load() async => AppSettings(
-    designLanguage: _decode(
-      _store.readString(_designLanguageKey),
-      DesignLanguagePreference.values,
-      AppSettings.defaults.designLanguage,
-    ),
-    themeMode: _decode(
-      _store.readString(_themeModeKey),
-      AppThemeMode.values,
-      AppSettings.defaults.themeMode,
-    ),
-    brand: _decode(
-      _store.readString(_brandKey),
-      DSBrand.values,
-      AppSettings.defaults.brand,
-    ),
-    language: _decode(
-      _store.readString(_languageKey),
-      AppLanguage.values,
-      AppSettings.defaults.language,
-    ),
-    hasCompletedOnboarding:
-        _store.readString(_onboardingKey) == _onboardingCompletedValue,
-  );
+  Future<AppSettings> load() async {
+    return AppSettings(
+      designLanguage: _readEnum(
+        _designLanguageKey,
+        DesignLanguagePreference.values,
+        AppSettings.defaults.designLanguage,
+      ),
+      themeMode: _readEnum(
+        _themeModeKey,
+        AppThemeMode.values,
+        AppSettings.defaults.themeMode,
+      ),
+      brand: _readEnum(_brandKey, DSBrand.values, AppSettings.defaults.brand),
+      language: _readEnum(
+        _languageKey,
+        AppLanguage.values,
+        AppSettings.defaults.language,
+      ),
+      hasCompletedOnboarding: _store.readString(_onboardingKey) == 'true',
+    );
+  }
 
   @override
   Future<void> save(AppSettings settings) async {
-    await Future.wait<void>(<Future<void>>[
-      _store.writeString(_designLanguageKey, settings.designLanguage.name),
-      _store.writeString(_themeModeKey, settings.themeMode.name),
-      _store.writeString(_brandKey, settings.brand.name),
-      _store.writeString(_languageKey, settings.language.name),
-      _store.writeString(
-        _onboardingKey,
-        settings.hasCompletedOnboarding ? _onboardingCompletedValue : 'false',
-      ),
-    ]);
+    await _store.writeString(_designLanguageKey, settings.designLanguage.name);
+    await _store.writeString(_themeModeKey, settings.themeMode.name);
+    await _store.writeString(_brandKey, settings.brand.name);
+    await _store.writeString(_languageKey, settings.language.name);
+    await _store.writeString(
+      _onboardingKey,
+      settings.hasCompletedOnboarding ? 'true' : 'false',
+    );
   }
 
   @override
   Future<void> clear() async {
-    await Future.wait<void>(_allKeys.map(_store.remove));
+    await _store.remove(_designLanguageKey);
+    await _store.remove(_themeModeKey);
+    await _store.remove(_brandKey);
+    await _store.remove(_languageKey);
+    await _store.remove(_onboardingKey);
   }
 
-  static T _decode<T extends Enum>(String? stored, List<T> values, T fallback) {
+  /// Finds the enum value whose `name` was stored.
+  ///
+  /// Returns [fallback] when nothing was saved yet, or when the saved text no
+  /// longer matches any value (for example after a rename).
+  T _readEnum<T extends Enum>(String key, List<T> values, T fallback) {
+    final stored = _store.readString(key);
     if (stored == null) return fallback;
-    for (final T value in values) {
+
+    for (final value in values) {
       if (value.name == stored) return value;
     }
     return fallback;

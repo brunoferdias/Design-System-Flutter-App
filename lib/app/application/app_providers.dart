@@ -6,36 +6,45 @@ import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final Provider<bool> platformIsAppleProvider = Provider<bool>(
-  (Ref ref) =>
-      defaultTargetPlatform == TargetPlatform.iOS ||
-      defaultTargetPlatform == TargetPlatform.macOS,
-  name: 'platformIsApple',
-);
+/// True on iOS and macOS.
+///
+/// It is a provider so the tests can pretend to be on an Apple device without
+/// actually running on one.
+final platformIsAppleProvider = Provider<bool>((ref) {
+  return defaultTargetPlatform == TargetPlatform.iOS ||
+      defaultTargetPlatform == TargetPlatform.macOS;
+});
 
-final Provider<DesignLanguage> designLanguageProvider =
-    Provider<DesignLanguage>(
-      (Ref ref) => ref
-          .watch(settingsProvider.select((AppSettings s) => s.designLanguage))
-          .resolve(platformIsApple: ref.watch(platformIsAppleProvider)),
-      name: 'designLanguage',
-    );
+// The three providers below turn what the user chose in Settings into the
+// values the widgets actually need. Keeping the conversion here means no page
+// has to repeat it.
 
-final Provider<Locale?> localeProvider = Provider<Locale?>((Ref ref) {
-  final AppLanguage language = ref.watch(
-    settingsProvider.select((AppSettings s) => s.language),
-  );
-  final String? code = language.languageCode;
-  return code == null ? null : Locale(code);
-}, name: 'locale');
+/// The look the app is rendering with right now.
+final designLanguageProvider = Provider<DesignLanguage>((ref) {
+  final preference = ref.watch(settingsProvider).designLanguage;
+  final platformIsApple = ref.watch(platformIsAppleProvider);
 
-final Provider<ThemeMode> themeModeProvider = Provider<ThemeMode>((Ref ref) {
-  final AppThemeMode mode = ref.watch(
-    settingsProvider.select((AppSettings s) => s.themeMode),
-  );
-  return switch (mode) {
-    AppThemeMode.system => ThemeMode.system,
-    AppThemeMode.light => ThemeMode.light,
-    AppThemeMode.dark => ThemeMode.dark,
-  };
-}, name: 'themeMode');
+  return preference.resolve(platformIsApple: platformIsApple);
+});
+
+/// The language to render in, or null to follow the phone.
+final localeProvider = Provider<Locale?>((ref) {
+  final languageCode = ref.watch(settingsProvider).language.languageCode;
+  if (languageCode == null) return null;
+
+  return Locale(languageCode);
+});
+
+/// Our theme mode translated into the one Flutter understands.
+final themeModeProvider = Provider<ThemeMode>((ref) {
+  final mode = ref.watch(settingsProvider).themeMode;
+
+  switch (mode) {
+    case AppThemeMode.system:
+      return ThemeMode.system;
+    case AppThemeMode.light:
+      return ThemeMode.light;
+    case AppThemeMode.dark:
+      return ThemeMode.dark;
+  }
+});

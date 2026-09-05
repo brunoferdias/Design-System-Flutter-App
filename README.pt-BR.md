@@ -2,7 +2,6 @@
 
 **Um design system, duas linguagens visuais.** Um app Flutter com forma de produção que renderiza cada tela nativamente em **Material 3** *e* **Cupertino**, totalmente localizado em **inglês, português e alemão** — feito para ser lido como referência de arquitetura, de design system e de internacionalização.
 
-[![CI](https://github.com/brunodias/design_system_flutter/actions/workflows/ci.yml/badge.svg)](https://github.com/brunodias/design_system_flutter/actions/workflows/ci.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-3.44-blue?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -303,13 +302,19 @@ for (final language in DesignLanguage.values) {
 
 ## Portões de qualidade
 
-O CI roda em todo push e pull request:
+Rode isto antes de commitar:
 
-1. `flutter gen-l10n` + `git diff --exit-code` — as localizações geradas precisam bater com os ARB.
-2. `dart format --set-exit-if-changed`
-3. `flutter analyze --fatal-infos` — com `strict-casts`, `strict-inference`, `strict-raw-types` e ~30 lints extras, incluindo `always_use_package_imports`, `require_trailing_commas` e `avoid_dynamic_calls`.
-4. `flutter test`
-5. `flutter build web --release`
+```bash
+flutter gen-l10n                                  # regera lib/l10n/generated
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze --fatal-infos
+flutter test
+flutter build web --release
+```
+
+O analisador é o `flutter_lints` mais alguns extras: `always_use_package_imports`,
+`directives_ordering`, `prefer_single_quotes`, `sort_constructors_first` e
+`unawaited_futures`.
 
 ---
 

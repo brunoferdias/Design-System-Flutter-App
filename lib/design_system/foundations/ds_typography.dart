@@ -1,9 +1,11 @@
 import 'package:design_system_flutter/design_system/foundations/ds_design_language.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
-@immutable
-final class DSTypography {
+/// The text styles the app can use, named by role instead of by size.
+///
+/// Material follows the Material 3 type scale and Cupertino follows Apple's,
+/// which is why every role is declared twice.
+class DSTypography {
   const DSTypography({
     required this.display,
     required this.headline,
@@ -114,10 +116,10 @@ final class DSTypography {
     ),
   );
 
-  factory DSTypography.of(DesignLanguage language) => switch (language) {
-    DesignLanguage.material => DSTypography.material(),
-    DesignLanguage.cupertino => DSTypography.cupertino(),
-  };
+  factory DSTypography.of(DesignLanguage language) {
+    if (language.isCupertino) return DSTypography.cupertino();
+    return DSTypography.material();
+  }
 
   final TextStyle display;
   final TextStyle headline;
@@ -128,6 +130,7 @@ final class DSTypography {
   final TextStyle label;
   final TextStyle caption;
 
+  /// Paints every style with the same colour (the theme's text colour).
   DSTypography applyColor(Color color) => DSTypography(
     display: display.copyWith(color: color),
     headline: headline.copyWith(color: color),
@@ -139,7 +142,8 @@ final class DSTypography {
     caption: caption.copyWith(color: color),
   );
 
-  Map<String, TextStyle> get catalogue => <String, TextStyle>{
+  /// The styles listed on the Foundations page.
+  Map<String, TextStyle> get catalogue => {
     'display': display,
     'headline': headline,
     'title': title,

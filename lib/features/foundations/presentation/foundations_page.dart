@@ -3,7 +3,11 @@ import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-final class FoundationsPage extends StatelessWidget {
+/// The first tab: shows the design tokens themselves.
+///
+/// Everything on this page is read from the current theme, so changing the
+/// brand or the design language changes what you see here.
+class FoundationsPage extends StatelessWidget {
   const FoundationsPage({super.key});
 
   @override
@@ -14,19 +18,17 @@ final class FoundationsPage extends StatelessWidget {
     return DSScaffold(
       title: l10n.foundationsTitle,
       body: DSPageBody(
-        children: <Widget>[
+        children: [
           DSText(l10n.appTagline, role: DSTextRole.display),
           const DSGap.sm(),
-          DSText(
-            l10n.foundationsSubtitle,
-            role: DSTextRole.body,
-            color: ds.colors.onSurfaceMuted,
-          ),
+          DSText(l10n.foundationsSubtitle, color: ds.colors.onSurfaceMuted),
           const DSGap.md(),
+
+          // A quick summary of what the app is currently rendering with.
           Wrap(
             spacing: DSSpacing.sm,
             runSpacing: DSSpacing.sm,
-            children: <Widget>[
+            children: [
               DSBadge(
                 ds.select(material: 'Material 3', cupertino: 'Cupertino'),
                 tone: DSBadgeTone.brand,
@@ -80,21 +82,24 @@ final class FoundationsPage extends StatelessWidget {
   }
 }
 
-String _hex(Color color) =>
-    '#${color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}';
+/// Turns a colour into the "#AARRGGBB" text shown under each swatch.
+String _toHex(Color color) {
+  final value = color.toARGB32().toRadixString(16).padLeft(8, '0');
+  return '#${value.toUpperCase()}';
+}
 
-final class _ColorTokens extends StatelessWidget {
+/// Every colour role, as tappable swatches.
+class _ColorTokens extends StatelessWidget {
   const _ColorTokens();
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
     final l10n = context.l10n;
-    final Map<String, Color> catalogue = ds.colors.catalogue;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: [
         DSText(
           l10n.foundationsTapToCopy,
           role: DSTextRole.caption,
@@ -104,8 +109,8 @@ final class _ColorTokens extends StatelessWidget {
         Wrap(
           spacing: DSSpacing.md,
           runSpacing: DSSpacing.md,
-          children: <Widget>[
-            for (final MapEntry<String, Color> entry in catalogue.entries)
+          children: [
+            for (final entry in ds.colors.catalogue.entries)
               _Swatch(role: entry.key, color: entry.value),
           ],
         ),
@@ -114,35 +119,43 @@ final class _ColorTokens extends StatelessWidget {
   }
 }
 
-final class _Swatch extends StatelessWidget {
+/// One colour: the sample, its role name and its hex code. Tapping copies it.
+class _Swatch extends StatelessWidget {
   const _Swatch({required this.role, required this.color});
+
   final String role;
   final Color color;
+
+  Future<void> _copyToClipboard(BuildContext context) async {
+    final hex = _toHex(color);
+    await Clipboard.setData(ClipboardData(text: hex));
+
+    // The clipboard call is asynchronous, so the page may be gone by now.
+    if (!context.mounted) return;
+    DSFeedback.toast(context, context.l10n.commonCopied);
+  }
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final String hex = _hex(color);
+    final hex = _toHex(color);
 
     return Semantics(
       button: true,
       label: context.l10n.a11yColorSwatch(role, hex),
       child: GestureDetector(
-        onTap: () async {
-          await Clipboard.setData(ClipboardData(text: hex));
-          if (!context.mounted) return;
-          DSFeedback.toast(context, context.l10n.commonCopied);
-        },
+        onTap: () => _copyToClipboard(context),
         child: SizedBox(
           width: 148,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               Container(
                 height: 56,
                 decoration: BoxDecoration(
                   color: color,
                   borderRadius: ds.radii.compactAll,
+                  // A border so white on white is still visible.
                   border: Border.all(color: ds.colors.separator),
                 ),
               ),
@@ -162,23 +175,22 @@ final class _Swatch extends StatelessWidget {
   }
 }
 
-final class _TypographyTokens extends StatelessWidget {
+/// Every text style, written in its own style.
+class _TypographyTokens extends StatelessWidget {
   const _TypographyTokens();
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
+
     return DSCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          for (final MapEntry<String, TextStyle> entry
-              in ds.typography.catalogue.entries) ...<Widget>[
+        children: [
+          for (final entry in ds.typography.catalogue.entries) ...[
             Text(entry.key, style: entry.value, maxLines: 1),
             DSText(
-              '${entry.value.fontSize?.toStringAsFixed(0)}pt · '
-              'w${entry.value.fontWeight?.value ?? 400} · '
-              '${((entry.value.height ?? 1) * (entry.value.fontSize ?? 0)).round()}pt line',
+              _describeStyle(entry.value),
               role: DSTextRole.caption,
               color: ds.colors.onSurfaceMuted,
             ),
@@ -188,12 +200,24 @@ final class _TypographyTokens extends StatelessWidget {
       ),
     );
   }
+
+  /// For example "14pt - w400 - 20pt line".
+  String _describeStyle(TextStyle style) {
+    final size = style.fontSize ?? 0;
+    final weight = style.fontWeight?.value ?? 400;
+    final lineHeight = ((style.height ?? 1) * size).round();
+
+    return '${size.toStringAsFixed(0)}pt · '
+        'w$weight · '
+        '${lineHeight}pt line';
+  }
 }
 
-final class _SpacingTokens extends StatelessWidget {
+/// The spacing scale, drawn as bars whose width is the value itself.
+class _SpacingTokens extends StatelessWidget {
   const _SpacingTokens();
 
-  static const Map<String, double> _scale = <String, double>{
+  static const Map<String, double> _scale = {
     'xxs': DSSpacing.xxs,
     'xs': DSSpacing.xs,
     'sm': DSSpacing.sm,
@@ -207,15 +231,16 @@ final class _SpacingTokens extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
+
     return DSCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          for (final MapEntry<String, double> entry in _scale.entries)
+        children: [
+          for (final entry in _scale.entries)
             Padding(
               padding: const EdgeInsets.only(bottom: DSSpacing.sm),
               child: Row(
-                children: <Widget>[
+                children: [
                   SizedBox(
                     width: 48,
                     child: DSText(entry.key, role: DSTextRole.caption),
@@ -225,7 +250,7 @@ final class _SpacingTokens extends StatelessWidget {
                     height: 16,
                     decoration: BoxDecoration(
                       color: ds.colors.brand,
-                      borderRadius: BorderRadius.all(ds.radii.compact),
+                      borderRadius: ds.radii.compactAll,
                     ),
                   ),
                   const DSGap.sm(),
@@ -243,13 +268,14 @@ final class _SpacingTokens extends StatelessWidget {
   }
 }
 
-final class _RadiusTokens extends StatelessWidget {
+/// The corner radii, drawn on identical boxes.
+class _RadiusTokens extends StatelessWidget {
   const _RadiusTokens();
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final Map<String, Radius> radii = <String, Radius>{
+    final radii = {
       'compact': ds.radii.compact,
       'control': ds.radii.control,
       'surface': ds.radii.surface,
@@ -260,10 +286,10 @@ final class _RadiusTokens extends StatelessWidget {
     return Wrap(
       spacing: DSSpacing.md,
       runSpacing: DSSpacing.md,
-      children: <Widget>[
-        for (final MapEntry<String, Radius> entry in radii.entries)
+      children: [
+        for (final entry in radii.entries)
           Column(
-            children: <Widget>[
+            children: [
               Container(
                 width: 88,
                 height: 64,
@@ -286,26 +312,28 @@ final class _RadiusTokens extends StatelessWidget {
   }
 }
 
-final class _ElevationTokens extends StatelessWidget {
+/// The shadow levels. On Cupertino they all look flat, which is on purpose.
+class _ElevationTokens extends StatelessWidget {
   const _ElevationTokens();
+
+  static const Map<String, double> _levels = {
+    'level0': DSElevation.level0,
+    'level1': DSElevation.level1,
+    'level2': DSElevation.level2,
+    'level3': DSElevation.level3,
+  };
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    const Map<String, double> levels = <String, double>{
-      'level0': DSElevation.level0,
-      'level1': DSElevation.level1,
-      'level2': DSElevation.level2,
-      'level3': DSElevation.level3,
-    };
 
     return Wrap(
       spacing: DSSpacing.lg,
       runSpacing: DSSpacing.lg,
-      children: <Widget>[
-        for (final MapEntry<String, double> entry in levels.entries)
+      children: [
+        for (final entry in _levels.entries)
           Column(
-            children: <Widget>[
+            children: [
               Container(
                 width: 88,
                 height: 64,
@@ -328,7 +356,8 @@ final class _ElevationTokens extends StatelessWidget {
   }
 }
 
-final class _MotionTokens extends StatefulWidget {
+/// The durations, as dots that race across the card when you tap it.
+class _MotionTokens extends StatefulWidget {
   const _MotionTokens();
 
   @override
@@ -336,37 +365,40 @@ final class _MotionTokens extends StatefulWidget {
 }
 
 class _MotionTokensState extends State<_MotionTokens> {
-  static const Map<String, Duration> _durations = <String, Duration>{
+  static const Map<String, Duration> _durations = {
     'instant': DSMotion.instant,
     'fast': DSMotion.fast,
     'normal': DSMotion.normal,
     'slow': DSMotion.slow,
   };
 
-  bool _extended = false;
+  /// Which side the dots are parked on. Tapping the card flips it.
+  bool _isOnTheRight = false;
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
+
     return DSCard(
-      onTap: () => setState(() => _extended = !_extended),
+      onTap: () => setState(() => _isOnTheRight = !_isOnTheRight),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          for (final MapEntry<String, Duration> entry in _durations.entries)
+        children: [
+          for (final entry in _durations.entries)
             Padding(
               padding: const EdgeInsets.only(bottom: DSSpacing.md),
               child: Row(
-                children: <Widget>[
+                children: [
                   SizedBox(
                     width: 64,
                     child: DSText(entry.key, role: DSTextRole.caption),
                   ),
                   Expanded(
                     child: AnimatedAlign(
+                      // Same distance, different duration: that is the point.
                       duration: entry.value,
                       curve: DSMotion.standard,
-                      alignment: _extended
+                      alignment: _isOnTheRight
                           ? Alignment.centerRight
                           : Alignment.centerLeft,
                       child: Container(

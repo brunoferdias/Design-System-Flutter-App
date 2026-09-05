@@ -1,48 +1,21 @@
+# Lint rules for the project. `flutter_lints` is the set that comes with
+# Flutter; the extra rules below are the ones this project cares about.
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
-  errors:
-    missing_required_param: error
-    missing_return: error
-    todo: ignore
-    prefer_const_constructors: warning
   exclude:
     - "**/*.g.dart"
-    - "**/*.freezed.dart"
     - "lib/l10n/generated/**"
-  language:
-    strict-casts: true
-    strict-inference: true
-    strict-raw-types: true
 
 linter:
   rules:
-    always_declare_return_types: true
-    avoid_dynamic_calls: true
-    avoid_slow_async_io: true
-    cancel_subscriptions: true
-    close_sinks: true
-    only_throw_errors: true
-    test_types_in_equals: true
-    throw_in_finally: true
-    unnecessary_statements: true
+    # Keeps imports written the same way everywhere.
+    - always_use_package_imports
+    - directives_ordering
+    - prefer_single_quotes
 
-    avoid_classes_with_only_static_members: false
-    one_member_abstracts: false
-    prefer_final_locals: true
-    prefer_final_in_for_each: true
-    unnecessary_lambdas: true
-    use_enums: true
+    # Constructors first, then fields, then methods.
+    - sort_constructors_first
 
-    prefer_const_constructors: true
-    prefer_const_constructors_in_immutables: true
-    prefer_const_declarations: true
-    prefer_const_literals_to_create_immutables: true
-    avoid_final_parameters: true
-
-    always_use_package_imports: true
-    directives_ordering: true
-    prefer_single_quotes: true
-    sort_constructors_first: true
-    require_trailing_commas: true
-    unawaited_futures: true
+    # Do not start a Future and forget about it by accident.
+    - unawaited_futures

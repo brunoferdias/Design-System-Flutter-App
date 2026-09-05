@@ -1,67 +1,83 @@
-import 'dart:async';
-
 import 'package:design_system_flutter/design_system/foundations/ds_brand.dart';
 import 'package:design_system_flutter/design_system/foundations/ds_design_language.dart';
 import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
 import 'package:design_system_flutter/features/settings/domain/settings_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final Provider<SettingsRepository> settingsRepositoryProvider =
-    Provider<SettingsRepository>(
-      (Ref ref) => throw UnimplementedError(
-        'settingsRepositoryProvider must be overridden in ProviderScope. '
-        'See main() in lib/main.dart.',
-      ),
-      name: 'settingsRepository',
-    );
+/// The repository the app writes to.
+///
+/// It throws on purpose: `main()` replaces it with the real one, and the tests
+/// replace it with a fake, so nobody can forget to provide it.
+final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
+  throw UnimplementedError(
+    'settingsRepositoryProvider must be overridden in ProviderScope. '
+    'See main() in lib/main.dart.',
+  );
+});
 
-final Provider<AppSettings> initialSettingsProvider = Provider<AppSettings>(
-  (Ref ref) => throw UnimplementedError(
+/// The settings that were read from storage before the app started.
+final initialSettingsProvider = Provider<AppSettings>((ref) {
+  throw UnimplementedError(
     'initialSettingsProvider must be overridden in ProviderScope. '
     'See main() in lib/main.dart.',
-  ),
-  name: 'initialSettings',
+  );
+});
+
+/// The settings the app is running with right now.
+final settingsProvider = NotifierProvider<SettingsController, AppSettings>(
+  SettingsController.new,
 );
 
-final NotifierProvider<SettingsController, AppSettings> settingsProvider =
-    NotifierProvider<SettingsController, AppSettings>(
-      SettingsController.new,
-      name: 'settings',
-    );
-
-final class SettingsController extends Notifier<AppSettings> {
+/// Changes the settings and saves them.
+///
+/// This is the application layer: it holds the state and calls the repository,
+/// so the pages only have to call one method per user action.
+class SettingsController extends Notifier<AppSettings> {
   @override
   AppSettings build() => ref.read(initialSettingsProvider);
 
-  void setDesignLanguage(DesignLanguagePreference preference) =>
-      _update(state.copyWith(designLanguage: preference));
+  void setDesignLanguage(DesignLanguagePreference preference) {
+    _update(state.copyWith(designLanguage: preference));
+  }
 
-  void setThemeMode(AppThemeMode mode) =>
-      _update(state.copyWith(themeMode: mode));
+  void setThemeMode(AppThemeMode mode) {
+    _update(state.copyWith(themeMode: mode));
+  }
 
-  void setBrand(DSBrand brand) => _update(state.copyWith(brand: brand));
+  void setBrand(DSBrand brand) {
+    _update(state.copyWith(brand: brand));
+  }
 
-  void setLanguage(AppLanguage language) =>
-      _update(state.copyWith(language: language));
+  void setLanguage(AppLanguage language) {
+    _update(state.copyWith(language: language));
+  }
 
-  void completeOnboarding() =>
-      _update(state.copyWith(hasCompletedOnboarding: true));
+  /// Called when the introduction is finished or skipped.
+  void completeOnboarding() {
+    _update(state.copyWith(hasCompletedOnboarding: true));
+  }
 
-  void replayOnboarding() =>
-      _update(state.copyWith(hasCompletedOnboarding: false));
+  /// Called from Settings when the user wants to see the introduction again.
+  void replayOnboarding() {
+    _update(state.copyWith(hasCompletedOnboarding: false));
+  }
 
+  /// Goes back to the defaults, but keeps the introduction marked as seen.
   Future<void> reset() async {
-    final bool seenOnboarding = state.hasCompletedOnboarding;
+    final seenOnboarding = state.hasCompletedOnboarding;
     state = AppSettings.defaults.copyWith(
       hasCompletedOnboarding: seenOnboarding,
     );
     await ref.read(settingsRepositoryProvider).save(state);
   }
 
+  /// Updates the state and saves in the background.
+  ///
+  /// The UI does not wait for the disk: the new value is on screen right away.
   void _update(AppSettings next) {
     if (next == state) return;
-    state = next;
 
-    unawaited(ref.read(settingsRepositoryProvider).save(next));
+    state = next;
+    ref.read(settingsRepositoryProvider).save(next);
   }
 }

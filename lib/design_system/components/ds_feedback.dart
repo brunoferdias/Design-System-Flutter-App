@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:design_system_flutter/design_system/components/ds_text.dart';
 import 'package:design_system_flutter/design_system/foundations/ds_motion.dart';
 import 'package:design_system_flutter/design_system/foundations/ds_spacing.dart';
@@ -7,8 +5,10 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-@immutable
-final class DSSheetAction<T> {
+/// One option inside a [DSFeedback.actionSheet].
+///
+/// `T` is whatever the caller wants back when the option is picked.
+class DSSheetAction<T> {
   const DSSheetAction({
     required this.value,
     required this.label,
@@ -16,13 +16,18 @@ final class DSSheetAction<T> {
     this.isDestructive = false,
   });
 
+  /// Returned by the sheet when this option is chosen.
   final T value;
   final String label;
   final IconData? icon;
   final bool isDestructive;
 }
 
-abstract final class DSFeedback {
+/// Dialogs, action sheets and toasts, in the style of the current platform.
+class DSFeedback {
+  /// Asks the user a yes/no question.
+  ///
+  /// Returns `true` only when the user confirms; dismissing counts as "no".
   static Future<bool> confirm(
     BuildContext context, {
     required String title,
@@ -31,19 +36,19 @@ abstract final class DSFeedback {
     required String cancelLabel,
     bool isDestructive = false,
   }) async {
-    final DSThemeData ds = context.ds;
+    final ds = context.ds;
 
     if (ds.isCupertino) {
-      final bool? result = await showCupertinoDialog<bool>(
+      final result = await showCupertinoDialog<bool>(
         context: context,
         barrierDismissible: true,
-        builder: (BuildContext dialogContext) => CupertinoAlertDialog(
+        builder: (dialogContext) => CupertinoAlertDialog(
           title: Text(title),
           content: Padding(
             padding: const EdgeInsets.only(top: DSSpacing.sm),
             child: Text(message),
           ),
-          actions: <CupertinoDialogAction>[
+          actions: [
             CupertinoDialogAction(
               onPressed: () => Navigator.of(dialogContext).pop(false),
               isDefaultAction: !isDestructive,
@@ -52,21 +57,22 @@ abstract final class DSFeedback {
             CupertinoDialogAction(
               onPressed: () => Navigator.of(dialogContext).pop(true),
               isDestructiveAction: isDestructive,
-              isDefaultAction: isDestructive == false,
+              isDefaultAction: !isDestructive,
               child: Text(confirmLabel),
             ),
           ],
         ),
       );
+      // The dialog returns null when it is dismissed without an answer.
       return result ?? false;
     }
 
-    final bool? result = await showDialog<bool>(
+    final result = await showDialog<bool>(
       context: context,
-      builder: (BuildContext dialogContext) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(title),
         content: Text(message),
-        actions: <Widget>[
+        actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(cancelLabel),
@@ -87,21 +93,23 @@ abstract final class DSFeedback {
     return result ?? false;
   }
 
+  /// Shows a list of options and returns the one the user picked, or `null`
+  /// when the sheet is cancelled.
   static Future<T?> actionSheet<T>(
     BuildContext context, {
     required String title,
     required List<DSSheetAction<T>> actions,
     required String cancelLabel,
   }) {
-    final DSThemeData ds = context.ds;
+    final ds = context.ds;
 
     if (ds.isCupertino) {
       return showCupertinoModalPopup<T>(
         context: context,
-        builder: (BuildContext sheetContext) => CupertinoActionSheet(
+        builder: (sheetContext) => CupertinoActionSheet(
           title: Text(title),
-          actions: <Widget>[
-            for (final DSSheetAction<T> action in actions)
+          actions: [
+            for (final action in actions)
               CupertinoActionSheetAction(
                 onPressed: () => Navigator.of(sheetContext).pop(action.value),
                 isDestructiveAction: action.isDestructive,
@@ -109,6 +117,7 @@ abstract final class DSFeedback {
               ),
           ],
           cancelButton: CupertinoActionSheetAction(
+            // Popping with no value means "cancelled".
             onPressed: () => Navigator.of(sheetContext).pop(),
             isDefaultAction: true,
             child: Text(cancelLabel),
@@ -117,14 +126,15 @@ abstract final class DSFeedback {
       );
     }
 
+    // Material has no cancel button: dragging the sheet down closes it.
     return showModalBottomSheet<T>(
       context: context,
       showDragHandle: true,
-      builder: (BuildContext sheetContext) => SafeArea(
+      builder: (sheetContext) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
+          children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 DSSpacing.lg,
@@ -134,7 +144,7 @@ abstract final class DSFeedback {
               ),
               child: DSText(title, role: DSTextRole.title),
             ),
-            for (final DSSheetAction<T> action in actions)
+            for (final action in actions)
               ListTile(
                 leading: action.icon == null ? null : Icon(action.icon),
                 title: Text(action.label),
@@ -148,12 +158,19 @@ abstract final class DSFeedback {
     );
   }
 
+  /// Shows a short message floating above the page.
+  ///
+  /// It is put in the root overlay so it survives page changes, and it takes a
+  /// copy of the theme because the overlay sits outside our [DSTheme].
   static void toast(BuildContext context, String message) {
-    final OverlayState overlay = Overlay.of(context, rootOverlay: true);
-    final DSThemeData ds = context.ds;
-    late final OverlayEntry entry;
+    final overlay = Overlay.of(context, rootOverlay: true);
+    final ds = context.ds;
+
+    // `late` because the toast needs a reference to the entry that holds it in
+    // order to remove itself once the animation is over.
+    late OverlayEntry entry;
     entry = OverlayEntry(
-      builder: (BuildContext overlayContext) => DSTheme(
+      builder: (overlayContext) => DSTheme(
         data: ds,
         child: _DSToast(
           message: message,
@@ -163,12 +180,15 @@ abstract final class DSFeedback {
         ),
       ),
     );
+
     overlay.insert(entry);
   }
 }
 
-final class _DSToast extends StatefulWidget {
+/// The toast itself: fades in, waits, fades out, then calls [onDismissed].
+class _DSToast extends StatefulWidget {
   const _DSToast({required this.message, required this.onDismissed});
+
   final String message;
   final VoidCallback onDismissed;
 
@@ -186,23 +206,34 @@ class _DSToastState extends State<_DSToast>
     reverseDuration: DSMotion.fast,
   );
 
+  late final CurvedAnimation _animation = CurvedAnimation(
+    parent: _controller,
+    curve: DSMotion.enter,
+    reverseCurve: DSMotion.exit,
+  );
+
   @override
   void initState() {
     super.initState();
-    unawaited(_run());
+    // Start the show-wait-hide cycle; nobody waits for it to finish.
+    _playAndDismiss();
   }
 
-  Future<void> _run() async {
+  Future<void> _playAndDismiss() async {
     await _controller.forward();
     await Future<void>.delayed(_visibleFor);
+    // The toast may already have been removed while we were waiting.
     if (!mounted) return;
+
     await _controller.reverse();
     if (!mounted) return;
+
     widget.onDismissed();
   }
 
   @override
   void dispose() {
+    _animation.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -210,24 +241,20 @@ class _DSToastState extends State<_DSToast>
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final CurvedAnimation animation = CurvedAnimation(
-      parent: _controller,
-      curve: DSMotion.enter,
-      reverseCurve: DSMotion.exit,
-    );
 
     return Positioned(
       left: DSSpacing.lg,
       right: DSSpacing.lg,
       bottom: MediaQuery.viewPaddingOf(context).bottom + DSSpacing.xxxl,
+      // The toast is only a message: taps must reach the page behind it.
       child: IgnorePointer(
         child: FadeTransition(
-          opacity: animation,
+          opacity: _animation,
           child: SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(0, 0.4),
               end: Offset.zero,
-            ).animate(animation),
+            ).animate(_animation),
             child: Align(
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 420),
@@ -236,11 +263,12 @@ class _DSToastState extends State<_DSToast>
                   vertical: DSSpacing.md,
                 ),
                 decoration: BoxDecoration(
+                  // The toast inverts the page colours so it stands out.
                   color: ds.isDark
                       ? ds.colors.surfaceSunken
                       : ds.colors.onSurface,
-                  borderRadius: BorderRadius.all(ds.radii.control),
-                  boxShadow: <BoxShadow>[
+                  borderRadius: ds.radii.controlAll,
+                  boxShadow: [
                     BoxShadow(
                       color: ds.colors.shadow.withValues(alpha: 0.25),
                       blurRadius: 24,

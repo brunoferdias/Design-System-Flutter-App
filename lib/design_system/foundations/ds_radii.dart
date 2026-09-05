@@ -1,7 +1,9 @@
 import 'package:design_system_flutter/design_system/foundations/ds_design_language.dart';
 import 'package:flutter/painting.dart';
 
-final class DSRadii {
+/// Corner radii. Material corners are rounder than Cupertino ones, so each
+/// design language has its own set.
+class DSRadii {
   const DSRadii({
     required this.compact,
     required this.control,
@@ -23,24 +25,22 @@ final class DSRadii {
     modal: Radius.circular(14),
   );
 
-  factory DSRadii.of(DesignLanguage language) => switch (language) {
-    DesignLanguage.material => DSRadii.material(),
-    DesignLanguage.cupertino => DSRadii.cupertino(),
-  };
+  factory DSRadii.of(DesignLanguage language) {
+    if (language.isCupertino) return DSRadii.cupertino();
+    return DSRadii.material();
+  }
 
   final Radius compact;
   final Radius control;
   final Radius surface;
   final Radius modal;
+
+  /// A radius big enough to always look like a pill.
   static const Radius pill = Radius.circular(999);
+  static const BorderRadius pillAll = BorderRadius.all(pill);
 
   BorderRadius get compactAll => BorderRadius.all(compact);
-
   BorderRadius get controlAll => BorderRadius.all(control);
-
   BorderRadius get surfaceAll => BorderRadius.all(surface);
-
   BorderRadius get modalAll => BorderRadius.all(modal);
-
-  static const BorderRadius pillAll = BorderRadius.all(pill);
 }

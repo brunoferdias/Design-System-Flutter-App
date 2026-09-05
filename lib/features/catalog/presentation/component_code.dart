@@ -1,9 +1,14 @@
 import 'package:design_system_flutter/features/catalog/domain/component_id.dart';
 
+/// The snippet shown under each demo.
+///
+/// These are hand written examples of how the component is used in this app --
+/// they are text, not code that runs.
 extension ComponentCode on ComponentId {
-  String get codeSample => switch (this) {
-    ComponentId.button =>
-      '''
+  String get codeSample {
+    switch (this) {
+      case ComponentId.button:
+        return '''
 DSButton(
   label: l10n.bookingSubmit,
   intent: DSButtonIntent.primary,
@@ -11,25 +16,28 @@ DSButton(
   isLoading: controller.isSubmitting,
   expand: true,
   onPressed: controller.submit,
-)''',
-    ComponentId.textField =>
-      '''
+)''';
+
+      case ComponentId.textField:
+        return '''
 DSTextField(
   label: l10n.bookingFieldEmail,
   placeholder: l10n.bookingFieldEmailHint,
   keyboardType: TextInputType.emailAddress,
   errorText: form.emailError,
   onChanged: controller.onEmailChanged,
-)''',
-    ComponentId.toggle =>
-      '''
+)''';
+
+      case ComponentId.toggle:
+        return '''
 DSSwitch(
   value: settings.flexibleFare,
   semanticLabel: l10n.bookingFlexibleFare,
   onChanged: controller.setFlexibleFare,
-)''',
-    ComponentId.slider =>
-      '''
+)''';
+
+      case ComponentId.slider:
+        return '''
 DSSlider(
   value: passengers.toDouble(),
   min: 1,
@@ -37,9 +45,10 @@ DSSlider(
   divisions: 5,
   semanticLabel: l10n.bookingPassengers,
   onChanged: (value) => controller.setPassengers(value.round()),
-)''',
-    ComponentId.segmentedControl =>
-      '''
+)''';
+
+      case ComponentId.segmentedControl:
+        return '''
 DSSegmentedControl<CabinClass>(
   value: form.cabin,
   onChanged: controller.setCabin,
@@ -48,9 +57,10 @@ DSSegmentedControl<CabinClass>(
     DSSegment(value: CabinClass.premium, label: l10n.bookingCabinPremium),
     DSSegment(value: CabinClass.business, label: l10n.bookingCabinBusiness),
   ],
-)''',
-    ComponentId.card =>
-      '''
+)''';
+
+      case ComponentId.card:
+        return '''
 DSCard(
   onTap: () => context.goNamed(AppRoute.playground.routeName),
   child: Column(
@@ -61,9 +71,10 @@ DSCard(
       DSText(l10n.playgroundSubtitle),
     ],
   ),
-)''',
-    ComponentId.listSection =>
-      '''
+)''';
+
+      case ComponentId.listSection:
+        return '''
 DSListSection(
   header: l10n.settingsSectionAppearance,
   footer: l10n.settingsBrandColorDescription,
@@ -75,18 +86,20 @@ DSListSection(
       onTap: controller.pickThemeMode,
     ),
   ],
-)''',
-    ComponentId.avatarBadge =>
-      '''
+)''';
+
+      case ComponentId.avatarBadge:
+        return '''
 Row(
   children: [
     const DSAvatar(name: 'Ada Lovelace', size: 56),
     const DSGap.md(),
     DSBadge(l10n.showcaseEnabled, tone: DSBadgeTone.success),
   ],
-)''',
-    ComponentId.dialog =>
-      '''
+)''';
+
+      case ComponentId.dialog:
+        return '''
 final confirmed = await DSFeedback.confirm(
   context,
   title: l10n.bookingConfirmTitle,
@@ -94,9 +107,10 @@ final confirmed = await DSFeedback.confirm(
   confirmLabel: l10n.commonConfirm,
   cancelLabel: l10n.commonCancel,
 );
-if (!context.mounted || !confirmed) return;''',
-    ComponentId.actionSheet =>
-      '''
+if (!context.mounted || !confirmed) return;''';
+
+      case ComponentId.actionSheet:
+        return '''
 final choice = await DSFeedback.actionSheet<ShareTarget>(
   context,
   title: l10n.showcaseSheetTitle,
@@ -109,12 +123,13 @@ final choice = await DSFeedback.actionSheet<ShareTarget>(
       isDestructive: true,
     ),
   ],
-);''',
-    ComponentId.toast =>
-      '''
-DSFeedback.toast(context, l10n.settingsResetDone);''',
-    ComponentId.progress =>
-      '''
-const DSProgressIndicator(size: 24)''',
-  };
+);''';
+
+      case ComponentId.toast:
+        return 'DSFeedback.toast(context, l10n.settingsResetDone);';
+
+      case ComponentId.progress:
+        return 'const DSProgressIndicator(size: 24)';
+    }
+  }
 }

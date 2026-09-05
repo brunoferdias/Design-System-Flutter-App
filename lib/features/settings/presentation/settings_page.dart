@@ -12,44 +12,51 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-final class SettingsPage extends ConsumerWidget {
+/// The fourth tab: every preference, plus the "about" section.
+///
+/// The page only reads the settings and calls the controller; it never saves
+/// anything itself.
+class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final ds = context.ds;
-    final AppSettings settings = ref.watch(settingsProvider);
-    final SettingsController controller = ref.read(settingsProvider.notifier);
+    final settings = ref.watch(settingsProvider);
+    final controller = ref.read(settingsProvider.notifier);
 
     return DSScaffold(
       title: l10n.settingsTitle,
       body: DSPageBody(
-        children: <Widget>[
+        children: [
           DSSectionHeader(
             title: l10n.settingsSectionDesignLanguage,
             description: l10n.settingsDesignLanguageDescription,
+            // No space above: this is the first thing on the page.
             topPadding: 0,
           ),
           DSSegmentedControl<DesignLanguagePreference>(
             value: settings.designLanguage,
             onChanged: controller.setDesignLanguage,
-            segments: <DSSegment<DesignLanguagePreference>>[
-              DSSegment<DesignLanguagePreference>(
+            segments: [
+              DSSegment(
                 value: DesignLanguagePreference.system,
                 label: l10n.designLanguageAutomatic,
               ),
-              DSSegment<DesignLanguagePreference>(
+              DSSegment(
                 value: DesignLanguagePreference.material,
                 label: l10n.designLanguageMaterial,
               ),
-              DSSegment<DesignLanguagePreference>(
+              DSSegment(
                 value: DesignLanguagePreference.cupertino,
                 label: l10n.designLanguageCupertino,
               ),
             ],
           ),
           const DSGap.md(),
+          // "Automatic" does not say which one won, so we spell it out. The
+          // live region makes screen readers announce the change.
           Semantics(
             liveRegion: true,
             child: DSText(
@@ -68,19 +75,13 @@ final class SettingsPage extends ConsumerWidget {
           DSSegmentedControl<AppThemeMode>(
             value: settings.themeMode,
             onChanged: controller.setThemeMode,
-            segments: <DSSegment<AppThemeMode>>[
-              DSSegment<AppThemeMode>(
+            segments: [
+              DSSegment(
                 value: AppThemeMode.system,
                 label: l10n.themeModeSystem,
               ),
-              DSSegment<AppThemeMode>(
-                value: AppThemeMode.light,
-                label: l10n.themeModeLight,
-              ),
-              DSSegment<AppThemeMode>(
-                value: AppThemeMode.dark,
-                label: l10n.themeModeDark,
-              ),
+              DSSegment(value: AppThemeMode.light, label: l10n.themeModeLight),
+              DSSegment(value: AppThemeMode.dark, label: l10n.themeModeDark),
             ],
           ),
           const DSGap.xl(),
@@ -102,10 +103,11 @@ final class SettingsPage extends ConsumerWidget {
             description: l10n.settingsLanguageDescription,
           ),
           DSListSection(
-            rows: <DSListRow>[
-              for (final AppLanguage language in AppLanguage.values)
+            rows: [
+              for (final language in AppLanguage.values)
                 DSListRow(
                   title: _languageLabel(context, language),
+                  // A tick marks the one in use.
                   leading: settings.language == language
                       ? ds.select(
                           material: Icons.check,
@@ -119,7 +121,7 @@ final class SettingsPage extends ConsumerWidget {
 
           DSSectionHeader(title: l10n.settingsSectionAbout),
           DSListSection(
-            rows: <DSListRow>[
+            rows: [
               DSListRow(
                 title: l10n.settingsVersion(AppInfo.version),
                 leading: ds.select(
@@ -142,6 +144,8 @@ final class SettingsPage extends ConsumerWidget {
                   material: Icons.slideshow_outlined,
                   cupertino: CupertinoIcons.play_rectangle,
                 ),
+                // Clearing the flag is not enough: the router only reads it
+                // during a navigation, so we also navigate.
                 onTap: () {
                   controller.replayOnboarding();
                   context.goNamed(AppRoute.onboarding.routeName);
@@ -163,28 +167,21 @@ final class SettingsPage extends ConsumerWidget {
     );
   }
 
-  static String _languageLabel(BuildContext context, AppLanguage language) {
-    final l10n = context.l10n;
-    return switch (language) {
-      AppLanguage.system => l10n.languageSystem,
-      AppLanguage.english => l10n.languageEnglish,
-      AppLanguage.portuguese => l10n.languagePortuguese,
-      AppLanguage.german => l10n.languageGerman,
-    };
-  }
-
-  static Future<void> _copyRepositoryUrl(BuildContext context) async {
+  Future<void> _copyRepositoryUrl(BuildContext context) async {
     await Clipboard.setData(const ClipboardData(text: AppInfo.repositoryUrl));
+
     if (!context.mounted) return;
     DSFeedback.toast(context, context.l10n.commonCopied);
   }
 
-  static Future<void> _confirmReset(
+  /// Resetting cannot be undone, so we ask first.
+  Future<void> _confirmReset(
     BuildContext context,
     SettingsController controller,
   ) async {
     final l10n = context.l10n;
-    final bool confirmed = await DSFeedback.confirm(
+
+    final confirmed = await DSFeedback.confirm(
       context,
       title: l10n.settingsResetTitle,
       message: l10n.settingsResetMessage,
@@ -193,9 +190,27 @@ final class SettingsPage extends ConsumerWidget {
       isDestructive: true,
     );
     if (!confirmed) return;
-    await controller.reset();
-    if (!context.mounted) return;
 
-    DSFeedback.toast(context, context.l10n.settingsResetDone);
+    await controller.reset();
+
+    // Both the dialog and the reset were awaited, so check the page is still
+    // there before showing the toast.
+    if (!context.mounted) return;
+    DSFeedback.toast(context, l10n.settingsResetDone);
+  }
+}
+
+String _languageLabel(BuildContext context, AppLanguage language) {
+  final l10n = context.l10n;
+
+  switch (language) {
+    case AppLanguage.system:
+      return l10n.languageSystem;
+    case AppLanguage.english:
+      return l10n.languageEnglish;
+    case AppLanguage.portuguese:
+      return l10n.languagePortuguese;
+    case AppLanguage.german:
+      return l10n.languageGerman;
   }
 }

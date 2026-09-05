@@ -4,7 +4,8 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-final class DSCard extends StatelessWidget {
+/// A padded, rounded surface. Pass [onTap] to make the whole card tappable.
+class DSCard extends StatelessWidget {
   const DSCard({
     required this.child,
     this.padding = const EdgeInsets.all(DSSpacing.lg),
@@ -19,9 +20,9 @@ final class DSCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final BorderRadius radius = ds.radii.surfaceAll;
+    final radius = ds.radii.surfaceAll;
 
-    final Widget surface = DecoratedBox(
+    final surface = DecoratedBox(
       decoration: BoxDecoration(
         color: ds.colors.surfaceElevated,
         borderRadius: radius,
@@ -36,17 +37,20 @@ final class DSCard extends StatelessWidget {
 
     if (onTap == null) return surface;
 
-    return ds.isCupertino
-        ? CupertinoButton(
-            onPressed: onTap,
-            padding: EdgeInsets.zero,
-            borderRadius: radius,
-            child: surface,
-          )
-        : Material(
-            color: Colors.transparent,
-            borderRadius: radius,
-            child: InkWell(onTap: onTap, borderRadius: radius, child: surface),
-          );
+    // Material shows an ink ripple, Cupertino fades the whole card instead.
+    if (ds.isCupertino) {
+      return CupertinoButton(
+        onPressed: onTap,
+        padding: EdgeInsets.zero,
+        borderRadius: radius,
+        child: surface,
+      );
+    }
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: radius,
+      child: InkWell(onTap: onTap, borderRadius: radius, child: surface),
+    );
   }
 }

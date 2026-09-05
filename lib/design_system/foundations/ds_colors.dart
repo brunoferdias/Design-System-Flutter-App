@@ -1,10 +1,13 @@
 import 'package:design_system_flutter/design_system/foundations/ds_design_language.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show ColorScheme;
+import 'package:flutter/material.dart' show Brightness, ColorScheme;
 import 'package:flutter/painting.dart';
 
-@immutable
-final class DSColors {
+/// Every colour the app is allowed to paint with.
+///
+/// Widgets never hardcode a colour: they read a role from here (`brand`,
+/// `danger`, `onSurfaceMuted`, ...) so light/dark and the four brands all work
+/// for free.
+class DSColors {
   const DSColors({
     required this.brightness,
     required this.brand,
@@ -29,17 +32,29 @@ final class DSColors {
     required this.materialScheme,
   });
 
+  /// Generates the palette from a single brand colour.
+  ///
+  /// Material takes its greys from the generated [ColorScheme]; Cupertino uses
+  /// Apple's system greys instead, so an iOS build looks like an iOS app.
   factory DSColors.fromSeed({
     required Color seed,
     required Brightness brightness,
     required DesignLanguage language,
   }) {
-    final ColorScheme scheme = ColorScheme.fromSeed(
+    final scheme = ColorScheme.fromSeed(
       seedColor: seed,
       brightness: brightness,
     );
-    final bool isDark = brightness == Brightness.dark;
-    final bool isCupertino = language.isCupertino;
+    final isDark = brightness == Brightness.dark;
+
+    Color byLanguage({
+      required Color material,
+      required Color cupertinoLight,
+      required Color cupertinoDark,
+    }) {
+      if (!language.isCupertino) return material;
+      return isDark ? cupertinoDark : cupertinoLight;
+    }
 
     return DSColors(
       brightness: brightness,
@@ -47,34 +62,48 @@ final class DSColors {
       onBrand: scheme.onPrimary,
       brandSubtle: scheme.primaryContainer,
       onBrandSubtle: scheme.onPrimaryContainer,
-      surface: isCupertino
-          ? (isDark ? const Color(0xFF000000) : const Color(0xFFF2F2F7))
-          : scheme.surface,
-      surfaceElevated: isCupertino
-          ? (isDark ? const Color(0xFF1C1C1E) : const Color(0xFFFFFFFF))
-          : scheme.surfaceContainerLow,
-      surfaceSunken: isCupertino
-          ? (isDark ? const Color(0xFF1C1C1E) : const Color(0xFFE5E5EA))
-          : scheme.surfaceContainerHighest,
-      onSurface: isCupertino
-          ? (isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000))
-          : scheme.onSurface,
-      onSurfaceMuted: isCupertino
-          ? (isDark ? const Color(0xFFAEAEB2) : const Color(0xFF6C6C70))
-          : scheme.onSurfaceVariant,
-      separator: isCupertino
-          ? (isDark ? const Color(0x99545458) : const Color(0x5C3C3C43))
-          : scheme.outlineVariant,
-      border: isCupertino
-          ? (isDark ? const Color(0xFF48484A) : const Color(0xFFC6C6C8))
-          : scheme.outline,
+      surface: byLanguage(
+        material: scheme.surface,
+        cupertinoLight: const Color(0xFFF2F2F7),
+        cupertinoDark: const Color(0xFF000000),
+      ),
+      surfaceElevated: byLanguage(
+        material: scheme.surfaceContainerLow,
+        cupertinoLight: const Color(0xFFFFFFFF),
+        cupertinoDark: const Color(0xFF1C1C1E),
+      ),
+      surfaceSunken: byLanguage(
+        material: scheme.surfaceContainerHighest,
+        cupertinoLight: const Color(0xFFE5E5EA),
+        cupertinoDark: const Color(0xFF1C1C1E),
+      ),
+      onSurface: byLanguage(
+        material: scheme.onSurface,
+        cupertinoLight: const Color(0xFF000000),
+        cupertinoDark: const Color(0xFFFFFFFF),
+      ),
+      onSurfaceMuted: byLanguage(
+        material: scheme.onSurfaceVariant,
+        cupertinoLight: const Color(0xFF6C6C70),
+        cupertinoDark: const Color(0xFFAEAEB2),
+      ),
+      separator: byLanguage(
+        material: scheme.outlineVariant,
+        cupertinoLight: const Color(0x5C3C3C43),
+        cupertinoDark: const Color(0x99545458),
+      ),
+      border: byLanguage(
+        material: scheme.outline,
+        cupertinoLight: const Color(0xFFC6C6C8),
+        cupertinoDark: const Color(0xFF48484A),
+      ),
       danger: scheme.error,
       onDanger: scheme.onError,
       dangerSubtle: scheme.errorContainer,
       success: isDark ? const Color(0xFF4ADE80) : const Color(0xFF14804A),
       warning: isDark ? const Color(0xFFFBBF24) : const Color(0xFF9A6300),
       info: isDark ? const Color(0xFF60A5FA) : const Color(0xFF1D4ED8),
-      scrim: Color(isDark ? 0x99000000 : 0x66000000),
+      scrim: isDark ? const Color(0x99000000) : const Color(0x66000000),
       shadow: const Color(0xFF000000),
       materialScheme: scheme,
     );
@@ -100,9 +129,12 @@ final class DSColors {
   final Color info;
   final Color scrim;
   final Color shadow;
+
+  /// Kept so the Material theme can be built from the same seed.
   final ColorScheme materialScheme;
 
-  Map<String, Color> get catalogue => <String, Color>{
+  /// The roles listed on the Foundations page.
+  Map<String, Color> get catalogue => {
     'brand': brand,
     'onBrand': onBrand,
     'brandSubtle': brandSubtle,

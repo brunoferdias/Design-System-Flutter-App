@@ -1,6 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-abstract interface class KeyValueStore {
+/// A tiny wrapper around key/value storage.
+///
+/// The repository talks to this instead of to SharedPreferences directly, so
+/// tests can hand it [InMemoryKeyValueStore] and run without a device.
+abstract class KeyValueStore {
   String? readString(String key);
 
   Future<void> writeString(String key, String value);
@@ -8,11 +12,15 @@ abstract interface class KeyValueStore {
   Future<void> remove(String key);
 }
 
-final class SharedPreferencesStore implements KeyValueStore {
+/// The real storage, backed by the device's preferences file.
+class SharedPreferencesStore implements KeyValueStore {
   const SharedPreferencesStore(this._preferences);
 
-  static Future<SharedPreferencesStore> open() async =>
-      SharedPreferencesStore(await SharedPreferences.getInstance());
+  /// Opens the preferences file. Call this once, before `runApp`.
+  static Future<SharedPreferencesStore> open() async {
+    final preferences = await SharedPreferences.getInstance();
+    return SharedPreferencesStore(preferences);
+  }
 
   final SharedPreferences _preferences;
 
@@ -20,16 +28,17 @@ final class SharedPreferencesStore implements KeyValueStore {
   String? readString(String key) => _preferences.getString(key);
 
   @override
-  Future<void> writeString(String key, String value) =>
-      _preferences.setString(key, value);
+  Future<void> writeString(String key, String value) {
+    return _preferences.setString(key, value);
+  }
 
   @override
   Future<void> remove(String key) => _preferences.remove(key);
 }
 
-final class InMemoryKeyValueStore implements KeyValueStore {
-  InMemoryKeyValueStore([Map<String, String>? seed])
-    : _values = <String, String>{...?seed};
+/// A store that keeps everything in a map. Used by the tests.
+class InMemoryKeyValueStore implements KeyValueStore {
+  InMemoryKeyValueStore([Map<String, String>? seed]) : _values = {...?seed};
 
   final Map<String, String> _values;
 
@@ -37,9 +46,12 @@ final class InMemoryKeyValueStore implements KeyValueStore {
   String? readString(String key) => _values[key];
 
   @override
-  Future<void> writeString(String key, String value) async =>
-      _values[key] = value;
+  Future<void> writeString(String key, String value) async {
+    _values[key] = value;
+  }
 
   @override
-  Future<void> remove(String key) async => _values.remove(key);
+  Future<void> remove(String key) async {
+    _values.remove(key);
+  }
 }

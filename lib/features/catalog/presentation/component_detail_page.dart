@@ -6,8 +6,10 @@ import 'package:design_system_flutter/features/catalog/presentation/component_co
 import 'package:design_system_flutter/features/catalog/presentation/component_demo.dart';
 import 'package:flutter/widgets.dart';
 
-final class ComponentDetailPage extends StatelessWidget {
+/// One component: what it is, a demo you can play with, and the code to copy.
+class ComponentDetailPage extends StatelessWidget {
   const ComponentDetailPage({required this.componentId, super.key});
+
   final ComponentId componentId;
 
   @override
@@ -18,7 +20,7 @@ final class ComponentDetailPage extends StatelessWidget {
     return DSScaffold(
       title: componentId.title(context),
       body: DSPageBody(
-        children: <Widget>[
+        children: [
           DSText(
             componentId.description(context),
             color: ds.colors.onSurfaceMuted,
@@ -27,7 +29,7 @@ final class ComponentDetailPage extends StatelessWidget {
           Wrap(
             spacing: DSSpacing.sm,
             runSpacing: DSSpacing.sm,
-            children: <Widget>[
+            children: [
               DSBadge(
                 ds.select(material: 'Material 3', cupertino: 'Cupertino'),
                 tone: DSBadgeTone.brand,
@@ -35,8 +37,10 @@ final class ComponentDetailPage extends StatelessWidget {
               DSBadge(componentId.slug),
             ],
           ),
+
           DSSectionHeader(title: l10n.foundationsPreviewLabel),
           DSCard(child: ComponentDemo(componentId: componentId)),
+
           const DSSectionHeader(title: 'Dart'),
           _CodeBlock(code: componentId.codeSample),
         ],
@@ -45,13 +49,17 @@ final class ComponentDetailPage extends StatelessWidget {
   }
 }
 
-final class _CodeBlock extends StatelessWidget {
+/// The code sample, in a monospaced box that scrolls sideways so long lines
+/// are never wrapped in the middle.
+class _CodeBlock extends StatelessWidget {
   const _CodeBlock({required this.code});
+
   final String code;
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: ds.colors.surfaceSunken,
@@ -65,7 +73,7 @@ final class _CodeBlock extends StatelessWidget {
           code,
           style: ds.typography.caption.copyWith(
             fontFamily: 'monospace',
-            fontFamilyFallback: const <String>['Menlo', 'Courier New'],
+            fontFamilyFallback: const ['Menlo', 'Courier New'],
             height: 1.5,
             color: ds.colors.onSurface,
           ),

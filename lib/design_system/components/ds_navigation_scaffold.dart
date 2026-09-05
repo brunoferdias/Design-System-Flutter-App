@@ -8,8 +8,8 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-@immutable
-final class DSNavigationDestination {
+/// One entry of the main navigation.
+class DSNavigationDestination {
   const DSNavigationDestination({
     required this.label,
     required this.materialIcon,
@@ -20,11 +20,16 @@ final class DSNavigationDestination {
   final IconData materialIcon;
   final IconData cupertinoIcon;
 
-  IconData icon(DesignLanguage language) =>
-      language.isCupertino ? cupertinoIcon : materialIcon;
+  IconData icon(DesignLanguage language) {
+    return language.isCupertino ? cupertinoIcon : materialIcon;
+  }
 }
 
-final class DSNavigationScaffold extends StatelessWidget {
+/// The navigation frame of the app.
+///
+/// On a phone it shows a bottom bar; from a tablet up it shows a side rail
+/// (with labels once the window is wide enough).
+class DSNavigationScaffold extends StatelessWidget {
   const DSNavigationScaffold({
     required this.destinations,
     required this.currentIndex,
@@ -40,14 +45,16 @@ final class DSNavigationScaffold extends StatelessWidget {
   final List<DSNavigationDestination> destinations;
   final int currentIndex;
   final ValueChanged<int> onDestinationSelected;
+
+  /// Title shown at the top of the side rail.
   final String railHeader;
+
+  /// The page currently being displayed.
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final DSWindowSize window = DSWindowSize.fromWidth(
-      MediaQuery.sizeOf(context).width,
-    );
+    final window = DSWindowSize.fromWidth(MediaQuery.sizeOf(context).width);
 
     if (window.isAtLeastMedium) {
       return _Rail(
@@ -55,28 +62,30 @@ final class DSNavigationScaffold extends StatelessWidget {
         currentIndex: currentIndex,
         onSelected: onDestinationSelected,
         header: railHeader,
-        extended: window == DSWindowSize.expanded,
+        showLabels: window == DSWindowSize.expanded,
         child: child,
       );
     }
 
-    return context.ds.isCupertino
-        ? _CupertinoBottomBar(
-            destinations: destinations,
-            currentIndex: currentIndex,
-            onSelected: onDestinationSelected,
-            child: child,
-          )
-        : _MaterialBottomBar(
-            destinations: destinations,
-            currentIndex: currentIndex,
-            onSelected: onDestinationSelected,
-            child: child,
-          );
+    if (context.ds.isCupertino) {
+      return _CupertinoBottomBar(
+        destinations: destinations,
+        currentIndex: currentIndex,
+        onSelected: onDestinationSelected,
+        child: child,
+      );
+    }
+
+    return _MaterialBottomBar(
+      destinations: destinations,
+      currentIndex: currentIndex,
+      onSelected: onDestinationSelected,
+      child: child,
+    );
   }
 }
 
-final class _MaterialBottomBar extends StatelessWidget {
+class _MaterialBottomBar extends StatelessWidget {
   const _MaterialBottomBar({
     required this.destinations,
     required this.currentIndex,
@@ -90,23 +99,25 @@ final class _MaterialBottomBar extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: child,
-    bottomNavigationBar: NavigationBar(
-      selectedIndex: currentIndex,
-      onDestinationSelected: onSelected,
-      destinations: <Widget>[
-        for (final DSNavigationDestination destination in destinations)
-          NavigationDestination(
-            icon: Icon(destination.materialIcon),
-            label: destination.label,
-          ),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: child,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: currentIndex,
+        onDestinationSelected: onSelected,
+        destinations: [
+          for (final destination in destinations)
+            NavigationDestination(
+              icon: Icon(destination.materialIcon),
+              label: destination.label,
+            ),
+        ],
+      ),
+    );
+  }
 }
 
-final class _CupertinoBottomBar extends StatelessWidget {
+class _CupertinoBottomBar extends StatelessWidget {
   const _CupertinoBottomBar({
     required this.destinations,
     required this.currentIndex,
@@ -122,10 +133,11 @@ final class _CupertinoBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
+
     return ColoredBox(
       color: ds.colors.surface,
       child: Column(
-        children: <Widget>[
+        children: [
           Expanded(child: child),
           CupertinoTabBar(
             currentIndex: currentIndex,
@@ -134,8 +146,8 @@ final class _CupertinoBottomBar extends StatelessWidget {
             activeColor: ds.colors.brand,
             inactiveColor: ds.colors.onSurfaceMuted,
             border: Border(top: BorderSide(color: ds.colors.separator)),
-            items: <BottomNavigationBarItem>[
-              for (final DSNavigationDestination destination in destinations)
+            items: [
+              for (final destination in destinations)
                 BottomNavigationBarItem(
                   icon: Icon(destination.cupertinoIcon),
                   label: destination.label,
@@ -148,13 +160,14 @@ final class _CupertinoBottomBar extends StatelessWidget {
   }
 }
 
-final class _Rail extends StatelessWidget {
+/// The side navigation used on tablets and desktops.
+class _Rail extends StatelessWidget {
   const _Rail({
     required this.destinations,
     required this.currentIndex,
     required this.onSelected,
     required this.header,
-    required this.extended,
+    required this.showLabels,
     required this.child,
   });
 
@@ -162,7 +175,10 @@ final class _Rail extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onSelected;
   final String header;
-  final bool extended;
+
+  /// On the widest windows the rail is wide enough to fit text next to icons.
+  final bool showLabels;
+
   final Widget child;
 
   @override
@@ -172,15 +188,15 @@ final class _Rail extends StatelessWidget {
     return ColoredBox(
       color: ds.colors.surface,
       child: Row(
-        children: <Widget>[
+        children: [
           Container(
-            width: extended ? 220 : 84,
+            width: showLabels ? 220 : 84,
             color: ds.colors.surfaceElevated,
             child: SafeArea(
               right: false,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
+                children: [
                   const DSGap.lg(),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -190,15 +206,17 @@ final class _Rail extends StatelessWidget {
                       header,
                       role: DSTextRole.subtitle,
                       maxLines: 1,
-                      textAlign: extended ? TextAlign.start : TextAlign.center,
+                      textAlign: showLabels
+                          ? TextAlign.start
+                          : TextAlign.center,
                     ),
                   ),
                   const DSGap.lg(),
-                  for (int i = 0; i < destinations.length; i++)
+                  for (var i = 0; i < destinations.length; i++)
                     _RailItem(
                       destination: destinations[i],
-                      selected: i == currentIndex,
-                      extended: extended,
+                      isSelected: i == currentIndex,
+                      showLabel: showLabels,
                       onTap: () => onSelected(i),
                     ),
                 ],
@@ -213,32 +231,33 @@ final class _Rail extends StatelessWidget {
   }
 }
 
-final class _RailItem extends StatelessWidget {
+class _RailItem extends StatelessWidget {
   const _RailItem({
     required this.destination,
-    required this.selected,
-    required this.extended,
+    required this.isSelected,
+    required this.showLabel,
     required this.onTap,
   });
 
   final DSNavigationDestination destination;
-  final bool selected;
-  final bool extended;
+  final bool isSelected;
+  final bool showLabel;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final Color foreground = selected
+    final foreground = isSelected
         ? ds.colors.onBrandSubtle
         : ds.colors.onSurfaceMuted;
 
     return Semantics(
-      selected: selected,
+      selected: isSelected,
       button: true,
       label: destination.label,
       child: GestureDetector(
         onTap: onTap,
+        // Opaque so the taps land on the padding too, not just on the icon.
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: DSMotion.fast,
@@ -247,25 +266,22 @@ final class _RailItem extends StatelessWidget {
             horizontal: DSSpacing.sm,
             vertical: DSSpacing.xxs,
           ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: DSSpacing.md,
-            vertical: DSSpacing.md,
-          ),
+          padding: const EdgeInsets.all(DSSpacing.md),
           decoration: BoxDecoration(
-            color: selected ? ds.colors.brandSubtle : null,
+            color: isSelected ? ds.colors.brandSubtle : null,
             borderRadius: ds.radii.controlAll,
           ),
           child: Row(
-            mainAxisAlignment: extended
+            mainAxisAlignment: showLabel
                 ? MainAxisAlignment.start
                 : MainAxisAlignment.center,
-            children: <Widget>[
+            children: [
               Icon(
                 destination.icon(ds.designLanguage),
                 color: foreground,
                 size: 24,
               ),
-              if (extended) ...<Widget>[
+              if (showLabel) ...[
                 const DSGap.md(),
                 Flexible(
                   child: DSText(

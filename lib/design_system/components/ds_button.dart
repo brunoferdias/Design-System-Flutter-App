@@ -4,9 +4,26 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-enum DSButtonIntent { primary, secondary, tertiary, destructive }
+/// How important a button is, which decides how it is painted.
+enum DSButtonIntent {
+  /// The main action of the screen: filled with the brand colour.
+  primary,
 
-final class DSButton extends StatelessWidget {
+  /// A supporting action: outlined.
+  secondary,
+
+  /// A low-key action: text only.
+  tertiary,
+
+  /// Something the user cannot undo: filled in red.
+  destructive,
+}
+
+/// A button that renders as a Material button or a Cupertino one, depending on
+/// the design language.
+///
+/// Pass `onPressed: null` to disable it.
+class DSButton extends StatelessWidget {
   const DSButton({
     required this.label,
     required this.onPressed,
@@ -21,110 +38,120 @@ final class DSButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final DSButtonIntent intent;
   final IconData? icon;
+
+  /// Replaces the label with a spinner and blocks taps.
   final bool isLoading;
+
+  /// Makes the button as wide as its parent.
   final bool expand;
 
-  bool get _enabled => onPressed != null && !isLoading;
+  /// While loading the button must not react to taps either.
+  bool get _isEnabled => onPressed != null && !isLoading;
+
+  /// The callback we actually hand to the underlying button.
+  VoidCallback? get _effectiveOnPressed => _isEnabled ? onPressed : null;
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final Widget button = ds.isCupertino
+    final button = ds.isCupertino
         ? _buildCupertino(context)
         : _buildMaterial(context);
-    return expand ? SizedBox(width: double.infinity, child: button) : button;
+
+    if (!expand) return button;
+    return SizedBox(width: double.infinity, child: button);
   }
 
   Widget _buildMaterial(BuildContext context) {
     final ds = context.ds;
-    final Widget child = _content(
-      context,
-      foreground: switch (intent) {
-        DSButtonIntent.primary => ds.colors.onBrand,
-        DSButtonIntent.destructive => ds.colors.onDanger,
-        DSButtonIntent.secondary || DSButtonIntent.tertiary => ds.colors.brand,
-      },
-    );
-    final VoidCallback? onPressed = _enabled ? this.onPressed : null;
 
-    return switch (intent) {
-      DSButtonIntent.primary => FilledButton(
-        onPressed: onPressed,
-        child: child,
-      ),
-      DSButtonIntent.destructive => FilledButton(
-        onPressed: onPressed,
-        style: FilledButton.styleFrom(
-          backgroundColor: ds.colors.danger,
-          foregroundColor: ds.colors.onDanger,
-        ),
-        child: child,
-      ),
-      DSButtonIntent.secondary => OutlinedButton(
-        onPressed: onPressed,
-        child: child,
-      ),
-      DSButtonIntent.tertiary => TextButton(onPressed: onPressed, child: child),
-    };
+    switch (intent) {
+      case DSButtonIntent.primary:
+        return FilledButton(
+          onPressed: _effectiveOnPressed,
+          child: _content(context, foreground: ds.colors.onBrand),
+        );
+      case DSButtonIntent.destructive:
+        return FilledButton(
+          onPressed: _effectiveOnPressed,
+          style: FilledButton.styleFrom(
+            backgroundColor: ds.colors.danger,
+            foregroundColor: ds.colors.onDanger,
+          ),
+          child: _content(context, foreground: ds.colors.onDanger),
+        );
+      case DSButtonIntent.secondary:
+        return OutlinedButton(
+          onPressed: _effectiveOnPressed,
+          child: _content(context, foreground: ds.colors.brand),
+        );
+      case DSButtonIntent.tertiary:
+        return TextButton(
+          onPressed: _effectiveOnPressed,
+          child: _content(context, foreground: ds.colors.brand),
+        );
+    }
   }
 
   Widget _buildCupertino(BuildContext context) {
     final ds = context.ds;
-    final VoidCallback? onPressed = _enabled ? this.onPressed : null;
-    final BorderRadius radius = ds.radii.controlAll;
-    const Size minimumSize = Size(0, 48);
-    const EdgeInsets padding = EdgeInsets.symmetric(
+    final radius = ds.radii.controlAll;
+    const minimumSize = Size(0, 48);
+    const padding = EdgeInsets.symmetric(
       horizontal: DSSpacing.xl,
       vertical: DSSpacing.md,
     );
 
-    return switch (intent) {
-      DSButtonIntent.primary => CupertinoButton.filled(
-        onPressed: onPressed,
-        borderRadius: radius,
-        minimumSize: minimumSize,
-        padding: padding,
-        child: _content(context, foreground: ds.colors.onBrand),
-      ),
-      DSButtonIntent.destructive => CupertinoButton(
-        onPressed: onPressed,
-        color: ds.colors.danger,
-        borderRadius: radius,
-        minimumSize: minimumSize,
-        padding: padding,
-        child: _content(context, foreground: ds.colors.onDanger),
-      ),
-
-      DSButtonIntent.secondary => CupertinoButton(
-        onPressed: onPressed,
-        borderRadius: radius,
-        minimumSize: minimumSize,
-        padding: EdgeInsets.zero,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: radius,
-            border: Border.all(color: ds.colors.border),
+    switch (intent) {
+      case DSButtonIntent.primary:
+        return CupertinoButton.filled(
+          onPressed: _effectiveOnPressed,
+          borderRadius: radius,
+          minimumSize: minimumSize,
+          padding: padding,
+          child: _content(context, foreground: ds.colors.onBrand),
+        );
+      case DSButtonIntent.destructive:
+        return CupertinoButton(
+          onPressed: _effectiveOnPressed,
+          color: ds.colors.danger,
+          borderRadius: radius,
+          minimumSize: minimumSize,
+          padding: padding,
+          child: _content(context, foreground: ds.colors.onDanger),
+        );
+      case DSButtonIntent.secondary:
+        // Cupertino has no outlined button, so we draw the border ourselves.
+        return CupertinoButton(
+          onPressed: _effectiveOnPressed,
+          borderRadius: radius,
+          minimumSize: minimumSize,
+          padding: EdgeInsets.zero,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              border: Border.all(color: ds.colors.border),
+            ),
+            child: Padding(
+              padding: padding,
+              child: _content(context, foreground: ds.colors.brand),
+            ),
           ),
-          child: Padding(
-            padding: padding,
-            child: _content(context, foreground: ds.colors.brand),
-          ),
-        ),
-      ),
-      DSButtonIntent.tertiary => CupertinoButton(
-        onPressed: onPressed,
-        minimumSize: minimumSize,
-        padding: padding,
-        child: _content(context, foreground: ds.colors.brand),
-      ),
-    };
+        );
+      case DSButtonIntent.tertiary:
+        return CupertinoButton(
+          onPressed: _effectiveOnPressed,
+          minimumSize: minimumSize,
+          padding: padding,
+          child: _content(context, foreground: ds.colors.brand),
+        );
+    }
   }
 
+  /// What goes inside the button: a spinner, a label, or an icon plus a label.
   Widget _content(BuildContext context, {required Color foreground}) {
     final ds = context.ds;
-    final Color color = _enabled
-        ? foreground
-        : foreground.withValues(alpha: 0.4);
+    final color = _isEnabled ? foreground : foreground.withValues(alpha: 0.4);
 
     if (isLoading) {
       return SizedBox(
@@ -136,16 +163,17 @@ final class DSButton extends StatelessWidget {
       );
     }
 
-    final Text text = Text(
+    final text = Text(
       label,
       style: ds.typography.label.copyWith(fontSize: 14, color: color),
     );
+
     if (icon == null) return text;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
+      children: [
         Icon(icon, size: 18, color: color),
         const SizedBox(width: DSSpacing.sm),
         Flexible(child: text),
@@ -154,7 +182,8 @@ final class DSButton extends StatelessWidget {
   }
 }
 
-final class DSIconButton extends StatelessWidget {
+/// A tappable icon, sized to stay inside the 44dp minimum touch target.
+class DSIconButton extends StatelessWidget {
   const DSIconButton({
     required this.icon,
     required this.onPressed,
@@ -164,11 +193,14 @@ final class DSIconButton extends StatelessWidget {
 
   final IconData icon;
   final VoidCallback? onPressed;
+
+  /// Read out loud by screen readers, and shown as a tooltip on Material.
   final String semanticLabel;
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
+
     if (ds.isCupertino) {
       return CupertinoButton(
         onPressed: onPressed,
@@ -182,6 +214,7 @@ final class DSIconButton extends StatelessWidget {
         ),
       );
     }
+
     return IconButton(
       onPressed: onPressed,
       tooltip: semanticLabel,

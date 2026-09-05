@@ -50,7 +50,7 @@ One nuance worth naming: `AppSettings` references `DSBrand` and `DesignLanguageP
 `SettingsRepositoryImpl` persists four enum names as strings. Every read is defensive:
 
 ```dart
-static T _decode<T extends Enum>(String? stored, List<T> values, T fallback)
+T _readEnum<T extends Enum>(String key, List<T> values, T fallback)
 ```
 
 An unknown value — from a downgrade, a corrupted store, a renamed constant — degrades to the default instead of throwing at startup. **Persisted data is untrusted input, even when your own app wrote it.**
@@ -102,20 +102,25 @@ Settings are loaded *before* `runApp`, not inside a `FutureBuilder`. There is no
 `AuroraApp` does exactly one interesting thing:
 
 ```dart
-final brightness = switch (themeMode) {
-  ThemeMode.light  => Brightness.light,
-  ThemeMode.dark   => Brightness.dark,
-  ThemeMode.system => MediaQuery.platformBrightnessOf(context),
-};
+final Brightness brightness;
+switch (themeMode) {
+  case ThemeMode.light:
+    brightness = Brightness.light;
+  case ThemeMode.dark:
+    brightness = Brightness.dark;
+  case ThemeMode.system:
+    brightness = MediaQuery.platformBrightnessOf(context);
+}
 
 final ds = DSThemeData.resolve(designLanguage: ..., brightness: brightness, brand: ...);
 
+// _buildMaterialApp -> MaterialApp.router(theme: DSMaterialTheme.from(ds), ...)
+// _buildCupertinoApp -> CupertinoApp.router(theme: DSCupertinoTheme.from(ds), ...)
 return DSTheme(
   data: ds,
-  child: switch (designLanguage) {
-    DesignLanguage.material  => MaterialApp.router(theme: DSMaterialTheme.from(ds), ...),
-    DesignLanguage.cupertino => CupertinoApp.router(theme: DSCupertinoTheme.from(ds), ...),
-  },
+  child: designLanguage.isCupertino
+      ? _buildCupertinoApp(ds, router, locale)
+      : _buildMaterialApp(ds, router, locale),
 );
 ```
 
@@ -134,11 +139,14 @@ Three decisions are packed in here:
 Page transitions are chosen *per navigation*, not at router construction:
 
 ```dart
-Page<void> adaptivePage(Widget child, GoRouterState state) =>
-    switch (ref.read(designLanguageProvider)) {
-      DesignLanguage.cupertino => CupertinoPage<void>(key: state.pageKey, child: child),
-      DesignLanguage.material  => MaterialPage<void>(key: state.pageKey, child: child),
-    };
+Page<void> adaptivePage(Widget child, GoRouterState state) {
+  final language = ref.read(designLanguageProvider);
+
+  if (language.isCupertino) {
+    return CupertinoPage<void>(key: state.pageKey, child: child);
+  }
+  return MaterialPage<void>(key: state.pageKey, child: child);
+}
 ```
 
 `ref.read` rather than `ref.watch`: the router is infrastructure and must not be rebuilt when a setting changes, but each push should honour the setting as it is *now*.

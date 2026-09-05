@@ -9,7 +9,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-final class OnboardingPage extends ConsumerStatefulWidget {
+/// The introduction shown on the first launch.
+///
+/// All five steps live on this one page: changing the step swaps the content
+/// with an animation, it does not navigate anywhere.
+class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
 
   @override
@@ -17,39 +21,51 @@ final class OnboardingPage extends ConsumerStatefulWidget {
 }
 
 class _OnboardingPageState extends ConsumerState<OnboardingPage> {
+  /// How fast a swipe has to be before it counts as "next" or "back".
   static const double _swipeThreshold = 240;
 
-  bool _forward = true;
+  /// Which way the content should slide. Kept here because it is only about
+  /// the animation, not about the step itself.
+  bool _isMovingForward = true;
 
-  void _goTo(OnboardingStep step) {
-    setState(
-      () =>
-          _forward = step.position >= ref.read(onboardingStepProvider).position,
-    );
-    ref.read(onboardingStepProvider.notifier).goTo(step);
+  void _goToNextStep() {
+    setState(() => _isMovingForward = true);
+    ref.read(onboardingStepProvider.notifier).next();
   }
 
-  void _advance(int delta) {
-    final OnboardingStep current = ref.read(onboardingStepProvider);
-    final int next = current.position + delta;
-    if (next < 0 || next >= OnboardingStep.count) return;
-    _goTo(OnboardingStep.values[next]);
+  void _goToPreviousStep() {
+    setState(() => _isMovingForward = false);
+    ref.read(onboardingStepProvider.notifier).previous();
   }
 
+  /// Ends the introduction, from the last step or from "Skip".
+  ///
+  /// Saving the flag is not enough to leave the page: the router only checks it
+  /// when a navigation happens, so we navigate ourselves right after.
   void _finish() {
     ref.read(settingsProvider.notifier).completeOnboarding();
     ref.read(onboardingStepProvider.notifier).restart();
     context.goNamed(AppRoute.foundations.routeName);
   }
 
+  void _onHorizontalDragEnd(DragEndDetails details) {
+    final velocity = details.primaryVelocity ?? 0;
+
+    // A negative velocity means the finger moved to the left, which in reading
+    // order means "go forward".
+    if (velocity < -_swipeThreshold) _goToNextStep();
+    if (velocity > _swipeThreshold) _goToPreviousStep();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final OnboardingStep step = ref.watch(onboardingStepProvider);
+    final step = ref.watch(onboardingStepProvider);
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
 
     return DSScaffold(
       title: l10n.appTitle,
-      actions: <Widget>[
+      actions: [
         DSButton(
           label: l10n.onboardingSkip,
           intent: DSButtonIntent.tertiary,
@@ -57,34 +73,32 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         ),
       ],
       body: Column(
-        children: <Widget>[
+        children: [
           Expanded(
             child: GestureDetector(
-              onHorizontalDragEnd: (DragEndDetails details) {
-                final double velocity = details.primaryVelocity ?? 0;
-                if (velocity < -_swipeThreshold) _advance(1);
-                if (velocity > _swipeThreshold) _advance(-1);
-              },
+              onHorizontalDragEnd: _onHorizontalDragEnd,
               child: AnimatedSwitcher(
                 duration: DSMotion.normal,
                 switchInCurve: DSMotion.enter,
                 switchOutCurve: DSMotion.exit,
-                transitionBuilder:
-                    (Widget child, Animation<double> animation) =>
-                        FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: Offset(_forward ? 0.12 : -0.12, 0),
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
-                          ),
-                        ),
-                child: OnboardingStepView(
-                  key: ValueKey<OnboardingStep>(step),
-                  step: step,
-                ),
+                transitionBuilder: (child, animation) {
+                  // The new step slides in from the side we are heading to.
+                  final offset = _isMovingForward ? 0.12 : -0.12;
+
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: Offset(offset, 0),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  );
+                },
+                // The key is what tells AnimatedSwitcher that this is a new
+                // step and it should animate.
+                child: OnboardingStepView(key: ValueKey(step), step: step),
               ),
             ),
           ),
@@ -94,36 +108,38 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               step.position + 1,
               OnboardingStep.count,
             ),
-            child: _StepIndicator(current: step),
+            child: _StepIndicator(currentStep: step),
           ),
           Padding(
             padding: EdgeInsets.fromLTRB(
               DSSpacing.lg,
               DSSpacing.md,
               DSSpacing.lg,
-              MediaQuery.viewPaddingOf(context).bottom + DSSpacing.lg,
+              bottomInset + DSSpacing.lg,
             ),
             child: Row(
-              children: <Widget>[
-                if (!step.isFirst) ...<Widget>[
+              children: [
+                // There is nothing to go back to on the first step.
+                if (!step.isFirst) ...[
                   Expanded(
                     child: DSButton(
                       label: l10n.onboardingBack,
                       intent: DSButtonIntent.secondary,
                       expand: true,
-                      onPressed: () => _advance(-1),
+                      onPressed: _goToPreviousStep,
                     ),
                   ),
                   const DSGap.md(),
                 ],
                 Expanded(
+                  // Twice as wide as "Back", so the main action stands out.
                   flex: 2,
                   child: DSButton(
                     label: step.isLast
                         ? l10n.onboardingStart
                         : l10n.onboardingNext,
                     expand: true,
-                    onPressed: step.isLast ? _finish : () => _advance(1),
+                    onPressed: step.isLast ? _finish : _goToNextStep,
                   ),
                 ),
               ],
@@ -135,26 +151,28 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 }
 
-final class _StepIndicator extends StatelessWidget {
-  const _StepIndicator({required this.current});
+/// The row of dots at the bottom. The current step is a wider pill.
+class _StepIndicator extends StatelessWidget {
+  const _StepIndicator({required this.currentStep});
 
-  final OnboardingStep current;
+  final OnboardingStep currentStep;
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        for (final OnboardingStep step in OnboardingStep.values)
+      children: [
+        for (final step in OnboardingStep.values)
           AnimatedContainer(
             duration: DSMotion.fast,
             curve: DSMotion.standard,
             margin: const EdgeInsets.symmetric(horizontal: DSSpacing.xs),
-            width: step == current ? 24 : 8,
+            width: step == currentStep ? 24 : 8,
             height: 8,
             decoration: BoxDecoration(
-              color: step == current
+              color: step == currentStep
                   ? ds.colors.brand
                   : ds.colors.onSurfaceMuted.withValues(alpha: 0.3),
               borderRadius: DSRadii.pillAll,

@@ -3,15 +3,19 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-@immutable
-final class DSSegment<T> {
+/// One option of a [DSSegmentedControl].
+class DSSegment<T> {
   const DSSegment({required this.value, required this.label, this.icon});
+
   final T value;
   final String label;
   final IconData? icon;
 }
 
-final class DSSegmentedControl<T extends Object> extends StatelessWidget {
+/// A row of options where exactly one is selected, like a set of tabs.
+///
+/// `T` is the type of the value each option carries, for example an enum.
+class DSSegmentedControl<T extends Object> extends StatelessWidget {
   const DSSegmentedControl({
     required this.segments,
     required this.value,
@@ -23,6 +27,8 @@ final class DSSegmentedControl<T extends Object> extends StatelessWidget {
        );
 
   final List<DSSegment<T>> segments;
+
+  /// The option that is currently selected.
   final T value;
   final ValueChanged<T> onChanged;
 
@@ -38,11 +44,12 @@ final class DSSegmentedControl<T extends Object> extends StatelessWidget {
           backgroundColor: ds.colors.surfaceSunken,
           thumbColor: ds.colors.surfaceElevated,
           padding: const EdgeInsets.all(DSSpacing.xxs),
-          onValueChanged: (T? next) {
+          // Cupertino can report null (nothing selected); we ignore that.
+          onValueChanged: (next) {
             if (next != null) onChanged(next);
           },
-          children: <T, Widget>{
-            for (final DSSegment<T> segment in segments)
+          children: {
+            for (final segment in segments)
               segment.value: Padding(
                 padding: const EdgeInsets.symmetric(vertical: DSSpacing.sm),
                 child: Text(
@@ -61,17 +68,18 @@ final class DSSegmentedControl<T extends Object> extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: SegmentedButton<T>(
-        segments: <ButtonSegment<T>>[
-          for (final DSSegment<T> segment in segments)
+        segments: [
+          for (final segment in segments)
             ButtonSegment<T>(
               value: segment.value,
               label: Text(segment.label),
               icon: segment.icon == null ? null : Icon(segment.icon),
             ),
         ],
-        selected: <T>{value},
+        // Material supports multiple selection; we always use a single value.
+        selected: {value},
         showSelectedIcon: false,
-        onSelectionChanged: (Set<T> selection) => onChanged(selection.first),
+        onSelectionChanged: (selection) => onChanged(selection.first),
         style: SegmentedButton.styleFrom(
           textStyle: ds.typography.label,
           selectedBackgroundColor: ds.colors.brandSubtle,

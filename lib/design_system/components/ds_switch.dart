@@ -2,7 +2,8 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-final class DSSwitch extends StatelessWidget {
+/// An on/off toggle. Pass `onChanged: null` to disable it.
+class DSSwitch extends StatelessWidget {
   const DSSwitch({
     required this.value,
     required this.onChanged,
@@ -17,20 +18,25 @@ final class DSSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
-    final Widget control = ds.isCupertino
-        ? CupertinoSwitch(
-            value: value,
-            onChanged: onChanged,
-            activeTrackColor: ds.colors.brand,
-          )
-        : Switch(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: ds.colors.onBrand,
-            activeTrackColor: ds.colors.brand,
-          );
-    return semanticLabel == null
-        ? control
-        : Semantics(label: semanticLabel, child: control);
+
+    final Widget control;
+    if (ds.isCupertino) {
+      control = CupertinoSwitch(
+        value: value,
+        onChanged: onChanged,
+        activeTrackColor: ds.colors.brand,
+      );
+    } else {
+      control = Switch(
+        value: value,
+        onChanged: onChanged,
+        activeThumbColor: ds.colors.onBrand,
+        activeTrackColor: ds.colors.brand,
+      );
+    }
+
+    // A switch on its own says nothing to a screen reader, so name it.
+    if (semanticLabel == null) return control;
+    return Semantics(label: semanticLabel, child: control);
   }
 }

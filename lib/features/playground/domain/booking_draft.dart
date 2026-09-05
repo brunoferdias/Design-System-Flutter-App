@@ -1,16 +1,19 @@
-import 'package:flutter/foundation.dart';
-
+/// The travel classes a booking can have, each with its price multiplier.
 enum CabinClass {
   economy(1),
   premium(1.6),
   business(2.4);
 
   const CabinClass(this.priceMultiplier);
+
   final double priceMultiplier;
 }
 
-@immutable
-final class BookingDraft {
+/// The booking form the user is filling in.
+///
+/// It is immutable and holds both the values and the rules (what is valid, how
+/// much it costs), so the page never has to calculate anything itself.
+class BookingDraft {
   const BookingDraft({
     required this.departure,
     this.name = '',
@@ -25,24 +28,32 @@ final class BookingDraft {
   static const double flexibleFareSurcharge = 39;
   static const int minPassengers = 1;
   static const int maxPassengers = 6;
+
   final String name;
   final String email;
   final CabinClass cabin;
   final int passengers;
   final bool flexibleFare;
   final DateTime departure;
+
+  /// Errors stay hidden until the user presses the button once, so the form
+  /// does not turn red while it is still being typed in.
   final bool showValidation;
 
   bool get isNameValid => name.trim().isNotEmpty;
 
-  bool get isEmailValid =>
-      RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email.trim());
+  /// Good enough for a demo: something, an @, something, a dot, something.
+  bool get isEmailValid {
+    return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email.trim());
+  }
 
   bool get isValid => isNameValid && isEmailValid;
 
-  double get total =>
-      baseFarePerPassenger * passengers * cabin.priceMultiplier +
-      (flexibleFare ? flexibleFareSurcharge : 0);
+  double get total {
+    final fare = baseFarePerPassenger * passengers * cabin.priceMultiplier;
+    if (!flexibleFare) return fare;
+    return fare + flexibleFareSurcharge;
+  }
 
   BookingDraft copyWith({
     String? name,
@@ -52,27 +63,30 @@ final class BookingDraft {
     bool? flexibleFare,
     DateTime? departure,
     bool? showValidation,
-  }) => BookingDraft(
-    name: name ?? this.name,
-    email: email ?? this.email,
-    cabin: cabin ?? this.cabin,
-    passengers: passengers ?? this.passengers,
-    flexibleFare: flexibleFare ?? this.flexibleFare,
-    departure: departure ?? this.departure,
-    showValidation: showValidation ?? this.showValidation,
-  );
+  }) {
+    return BookingDraft(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      cabin: cabin ?? this.cabin,
+      passengers: passengers ?? this.passengers,
+      flexibleFare: flexibleFare ?? this.flexibleFare,
+      departure: departure ?? this.departure,
+      showValidation: showValidation ?? this.showValidation,
+    );
+  }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is BookingDraft &&
-          other.name == name &&
-          other.email == email &&
-          other.cabin == cabin &&
-          other.passengers == passengers &&
-          other.flexibleFare == flexibleFare &&
-          other.departure == departure &&
-          other.showValidation == showValidation;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is BookingDraft &&
+        other.name == name &&
+        other.email == email &&
+        other.cabin == cabin &&
+        other.passengers == passengers &&
+        other.flexibleFare == flexibleFare &&
+        other.departure == departure &&
+        other.showValidation == showValidation;
+  }
 
   @override
   int get hashCode => Object.hash(

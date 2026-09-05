@@ -5,28 +5,48 @@ import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 
-final class ComponentDemo extends StatelessWidget {
+/// Picks the live demo for a component.
+///
+/// Each demo is a small widget below, kept stateful when the example needs to
+/// react to taps.
+class ComponentDemo extends StatelessWidget {
   const ComponentDemo({required this.componentId, super.key});
+
   final ComponentId componentId;
 
   @override
-  Widget build(BuildContext context) => switch (componentId) {
-    ComponentId.button => const _ButtonDemo(),
-    ComponentId.textField => const _TextFieldDemo(),
-    ComponentId.toggle => const _SwitchDemo(),
-    ComponentId.slider => const _SliderDemo(),
-    ComponentId.segmentedControl => const _SegmentedDemo(),
-    ComponentId.card => const _CardDemo(),
-    ComponentId.listSection => const _ListSectionDemo(),
-    ComponentId.avatarBadge => const _AvatarBadgeDemo(),
-    ComponentId.dialog => const _DialogDemo(),
-    ComponentId.actionSheet => const _ActionSheetDemo(),
-    ComponentId.toast => const _ToastDemo(),
-    ComponentId.progress => const _ProgressDemo(),
-  };
+  Widget build(BuildContext context) {
+    switch (componentId) {
+      case ComponentId.button:
+        return const _ButtonDemo();
+      case ComponentId.textField:
+        return const _TextFieldDemo();
+      case ComponentId.toggle:
+        return const _SwitchDemo();
+      case ComponentId.slider:
+        return const _SliderDemo();
+      case ComponentId.segmentedControl:
+        return const _SegmentedDemo();
+      case ComponentId.card:
+        return const _CardDemo();
+      case ComponentId.listSection:
+        return const _ListSectionDemo();
+      case ComponentId.avatarBadge:
+        return const _AvatarBadgeDemo();
+      case ComponentId.dialog:
+        return const _DialogDemo();
+      case ComponentId.actionSheet:
+        return const _ActionSheetDemo();
+      case ComponentId.toast:
+        return const _ToastDemo();
+      case ComponentId.progress:
+        return const _ProgressDemo();
+    }
+  }
 }
 
-final class _ButtonDemo extends StatefulWidget {
+/// Every button intent. The first one also toggles its loading state.
+class _ButtonDemo extends StatefulWidget {
   const _ButtonDemo();
 
   @override
@@ -39,12 +59,12 @@ class _ButtonDemoState extends State<_ButtonDemo> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
+      children: [
         DSButton(
           label: l10n.showcaseIntentPrimary,
-          intent: DSButtonIntent.primary,
           isLoading: _isLoading,
           expand: true,
           onPressed: () => setState(() => _isLoading = !_isLoading),
@@ -72,29 +92,30 @@ class _ButtonDemoState extends State<_ButtonDemo> {
           onPressed: () {},
         ),
         const DSGap.md(),
-
+        // A null callback is what disables a button.
         DSButton(label: l10n.showcaseDisabled, expand: true, onPressed: null),
       ],
     );
   }
 }
 
-final class _TextFieldDemo extends StatelessWidget {
+/// The three states of a text field: normal, in error, and disabled.
+class _TextFieldDemo extends StatelessWidget {
   const _TextFieldDemo();
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
+      children: [
         DSTextField(
           label: l10n.showcaseSampleLabel,
           placeholder: l10n.showcaseSamplePlaceholder,
           helperText: l10n.showcaseSampleHelper,
         ),
         const DSGap.lg(),
-
         DSTextField(
           label: l10n.showcaseSampleLabel,
           placeholder: l10n.showcaseSamplePlaceholder,
@@ -111,7 +132,7 @@ final class _TextFieldDemo extends StatelessWidget {
   }
 }
 
-final class _SwitchDemo extends StatefulWidget {
+class _SwitchDemo extends StatefulWidget {
   const _SwitchDemo();
 
   @override
@@ -119,19 +140,20 @@ final class _SwitchDemo extends StatefulWidget {
 }
 
 class _SwitchDemoState extends State<_SwitchDemo> {
-  bool _value = true;
+  bool _isOn = true;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return DSListSection(
-      rows: <DSListRow>[
+      rows: [
         DSListRow(
-          title: _value ? l10n.showcaseEnabled : l10n.showcaseDisabled,
+          title: _isOn ? l10n.showcaseEnabled : l10n.showcaseDisabled,
           trailing: DSSwitch(
-            value: _value,
+            value: _isOn,
             semanticLabel: l10n.componentSwitch,
-            onChanged: (bool next) => setState(() => _value = next),
+            onChanged: (next) => setState(() => _isOn = next),
           ),
         ),
         DSListRow(
@@ -143,7 +165,8 @@ class _SwitchDemoState extends State<_SwitchDemo> {
   }
 }
 
-final class _SliderDemo extends StatefulWidget {
+/// A free-moving slider and one that snaps to five steps.
+class _SliderDemo extends StatefulWidget {
   const _SliderDemo();
 
   @override
@@ -151,37 +174,41 @@ final class _SliderDemo extends StatefulWidget {
 }
 
 class _SliderDemoState extends State<_SliderDemo> {
-  double _continuous = 0.35;
-  double _stepped = 3;
+  double _continuousValue = 0.35;
+  double _steppedValue = 3;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        DSText('${(_continuous * 100).round()}%', role: DSTextRole.subtitle),
+      children: [
+        DSText(
+          '${(_continuousValue * 100).round()}%',
+          role: DSTextRole.subtitle,
+        ),
         DSSlider(
-          value: _continuous,
+          value: _continuousValue,
           semanticLabel: l10n.componentSlider,
-          onChanged: (double next) => setState(() => _continuous = next),
+          onChanged: (next) => setState(() => _continuousValue = next),
         ),
         const DSGap.lg(),
-        DSText(_stepped.round().toString(), role: DSTextRole.subtitle),
+        DSText(_steppedValue.round().toString(), role: DSTextRole.subtitle),
         DSSlider(
-          value: _stepped,
+          value: _steppedValue,
           min: 1,
           max: 5,
           divisions: 4,
           semanticLabel: l10n.componentSlider,
-          onChanged: (double next) => setState(() => _stepped = next),
+          onChanged: (next) => setState(() => _steppedValue = next),
         ),
       ],
     );
   }
 }
 
-final class _SegmentedDemo extends StatefulWidget {
+class _SegmentedDemo extends StatefulWidget {
   const _SegmentedDemo();
 
   @override
@@ -189,36 +216,39 @@ final class _SegmentedDemo extends StatefulWidget {
 }
 
 class _SegmentedDemoState extends State<_SegmentedDemo> {
-  String _value = 'a';
+  String _selected = 'a';
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return DSSegmentedControl<String>(
-      value: _value,
-      onChanged: (String next) => setState(() => _value = next),
-      segments: <DSSegment<String>>[
-        DSSegment<String>(value: 'a', label: l10n.bookingCabinEconomy),
-        DSSegment<String>(value: 'b', label: l10n.bookingCabinPremium),
-        DSSegment<String>(value: 'c', label: l10n.bookingCabinBusiness),
+      value: _selected,
+      onChanged: (next) => setState(() => _selected = next),
+      segments: [
+        DSSegment(value: 'a', label: l10n.bookingCabinEconomy),
+        DSSegment(value: 'b', label: l10n.bookingCabinPremium),
+        DSSegment(value: 'c', label: l10n.bookingCabinBusiness),
       ],
     );
   }
 }
 
-final class _CardDemo extends StatelessWidget {
+/// A plain card and a tappable one.
+class _CardDemo extends StatelessWidget {
   const _CardDemo();
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
+      children: [
         DSCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               DSText(l10n.componentCard, role: DSTextRole.title),
               const DSGap.xs(),
               DSText(
@@ -232,7 +262,7 @@ final class _CardDemo extends StatelessWidget {
         DSCard(
           onTap: () => DSFeedback.toast(context, l10n.commonCopied),
           child: Row(
-            children: <Widget>[
+            children: [
               const DSAvatar(name: 'Ada Lovelace'),
               const DSGap.md(),
               Expanded(child: DSText(l10n.foundationsTapToCopy, maxLines: 2)),
@@ -244,29 +274,28 @@ final class _CardDemo extends StatelessWidget {
   }
 }
 
-final class _ListSectionDemo extends StatelessWidget {
+class _ListSectionDemo extends StatelessWidget {
   const _ListSectionDemo();
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final DesignLanguage language = context.ds.designLanguage;
+    final isCupertino = context.ds.isCupertino;
+
     return DSListSection(
       header: l10n.componentsGroupContainment,
       footer: l10n.componentListSectionDescription,
-      rows: <DSListRow>[
+      rows: [
         DSListRow(
           title: l10n.showcaseSampleLabel,
           additionalInfo: l10n.showcaseEnabled,
-          leading: language.isCupertino
-              ? CupertinoIcons.star
-              : Icons.star_outline,
+          leading: isCupertino ? CupertinoIcons.star : Icons.star_outline,
           onTap: () {},
         ),
         DSListRow(
           title: l10n.componentListSection,
           subtitle: l10n.componentListSectionDescription,
-          leading: language.isCupertino
+          leading: isCupertino
               ? CupertinoIcons.square_list
               : Icons.list_outlined,
           onTap: () {},
@@ -274,9 +303,7 @@ final class _ListSectionDemo extends StatelessWidget {
         DSListRow(
           title: l10n.commonDelete,
           isDestructive: true,
-          leading: language.isCupertino
-              ? CupertinoIcons.delete
-              : Icons.delete_outline,
+          leading: isCupertino ? CupertinoIcons.delete : Icons.delete_outline,
           onTap: () {},
         ),
       ],
@@ -284,17 +311,19 @@ final class _ListSectionDemo extends StatelessWidget {
   }
 }
 
-final class _AvatarBadgeDemo extends StatelessWidget {
+/// Avatars at three sizes, and every badge tone.
+class _AvatarBadgeDemo extends StatelessWidget {
   const _AvatarBadgeDemo();
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: [
         const Row(
-          children: <Widget>[
+          children: [
             DSAvatar(name: 'Ada Lovelace', size: 56),
             DSGap.md(),
             DSAvatar(name: 'Grace Hopper'),
@@ -306,7 +335,7 @@ final class _AvatarBadgeDemo extends StatelessWidget {
         Wrap(
           spacing: DSSpacing.sm,
           runSpacing: DSSpacing.sm,
-          children: <Widget>[
+          children: [
             DSBadge(l10n.showcaseEnabled, tone: DSBadgeTone.success),
             DSBadge(l10n.showcaseLoading, tone: DSBadgeTone.info),
             DSBadge(l10n.showcaseDisabled),
@@ -319,79 +348,89 @@ final class _AvatarBadgeDemo extends StatelessWidget {
   }
 }
 
-final class _DialogDemo extends StatelessWidget {
+class _DialogDemo extends StatelessWidget {
   const _DialogDemo();
 
+  Future<void> _openDialog(BuildContext context) async {
+    final l10n = context.l10n;
+
+    final confirmed = await DSFeedback.confirm(
+      context,
+      title: l10n.showcaseDialogTitle,
+      message: l10n.showcaseDialogMessage,
+      confirmLabel: l10n.commonDelete,
+      cancelLabel: l10n.commonCancel,
+      isDestructive: true,
+    );
+
+    // We waited for the dialog, so the page may be gone by now.
+    if (!context.mounted || !confirmed) return;
+    DSFeedback.toast(context, l10n.commonDone);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     return DSButton(
-      label: l10n.showcaseOpenDialog,
+      label: context.l10n.showcaseOpenDialog,
       expand: true,
-      onPressed: () async {
-        final bool confirmed = await DSFeedback.confirm(
-          context,
-          title: l10n.showcaseDialogTitle,
-          message: l10n.showcaseDialogMessage,
-          confirmLabel: l10n.commonDelete,
-          cancelLabel: l10n.commonCancel,
-          isDestructive: true,
-        );
-
-        if (!context.mounted || !confirmed) return;
-        DSFeedback.toast(context, l10n.commonDone);
-      },
+      onPressed: () => _openDialog(context),
     );
   }
 }
 
-final class _ActionSheetDemo extends StatelessWidget {
+class _ActionSheetDemo extends StatelessWidget {
   const _ActionSheetDemo();
 
+  Future<void> _openSheet(BuildContext context) async {
+    final l10n = context.l10n;
+
+    final choice = await DSFeedback.actionSheet<String>(
+      context,
+      title: l10n.showcaseSheetTitle,
+      cancelLabel: l10n.commonCancel,
+      actions: [
+        DSSheetAction(
+          value: l10n.showcaseSheetCopyLink,
+          label: l10n.showcaseSheetCopyLink,
+          icon: Icons.link,
+        ),
+        DSSheetAction(
+          value: l10n.showcaseSheetExportCode,
+          label: l10n.showcaseSheetExportCode,
+          icon: Icons.code,
+        ),
+        DSSheetAction(
+          value: l10n.showcaseSheetReport,
+          label: l10n.showcaseSheetReport,
+          icon: Icons.flag_outlined,
+          isDestructive: true,
+        ),
+      ],
+    );
+
+    // A null choice means the sheet was cancelled.
+    if (!context.mounted || choice == null) return;
+    DSFeedback.toast(context, choice);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     return DSButton(
-      label: l10n.showcaseOpenActionSheet,
+      label: context.l10n.showcaseOpenActionSheet,
       intent: DSButtonIntent.secondary,
       expand: true,
-      onPressed: () async {
-        final String? choice = await DSFeedback.actionSheet<String>(
-          context,
-          title: l10n.showcaseSheetTitle,
-          cancelLabel: l10n.commonCancel,
-          actions: <DSSheetAction<String>>[
-            DSSheetAction<String>(
-              value: l10n.showcaseSheetCopyLink,
-              label: l10n.showcaseSheetCopyLink,
-              icon: Icons.link,
-            ),
-            DSSheetAction<String>(
-              value: l10n.showcaseSheetExportCode,
-              label: l10n.showcaseSheetExportCode,
-              icon: Icons.code,
-            ),
-            DSSheetAction<String>(
-              value: l10n.showcaseSheetReport,
-              label: l10n.showcaseSheetReport,
-              icon: Icons.flag_outlined,
-              isDestructive: true,
-            ),
-          ],
-        );
-        if (!context.mounted || choice == null) return;
-        DSFeedback.toast(context, choice);
-      },
+      onPressed: () => _openSheet(context),
     );
   }
 }
 
-final class _ToastDemo extends StatelessWidget {
+class _ToastDemo extends StatelessWidget {
   const _ToastDemo();
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
     return DSButton(
       label: l10n.showcaseShowToast,
       intent: DSButtonIntent.secondary,
@@ -401,16 +440,18 @@ final class _ToastDemo extends StatelessWidget {
   }
 }
 
-final class _ProgressDemo extends StatelessWidget {
+class _ProgressDemo extends StatelessWidget {
   const _ProgressDemo();
 
   @override
-  Widget build(BuildContext context) => const Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    children: <Widget>[
-      DSProgressIndicator(size: 20),
-      DSProgressIndicator(),
-      DSProgressIndicator(size: 40),
-    ],
-  );
+  Widget build(BuildContext context) {
+    return const Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        DSProgressIndicator(size: 20),
+        DSProgressIndicator(),
+        DSProgressIndicator(size: 40),
+      ],
+    );
+  }
 }

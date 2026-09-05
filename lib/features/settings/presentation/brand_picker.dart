@@ -2,72 +2,104 @@ import 'package:design_system_flutter/core/extensions/build_context_x.dart';
 import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 
-final class BrandPicker extends StatelessWidget {
+/// The four brand colours, side by side. The selected one gets a thick border.
+class BrandPicker extends StatelessWidget {
   const BrandPicker({
     required this.selected,
     required this.onSelected,
     super.key,
   });
+
   final DSBrand selected;
   final ValueChanged<DSBrand> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    final ds = context.ds;
     return Row(
-      children: <Widget>[
-        for (final DSBrand brand in DSBrand.values)
+      children: [
+        for (final brand in DSBrand.values)
+          // Expanded so the four swatches share the width evenly.
           Expanded(
-            child: Semantics(
-              button: true,
-              selected: brand == selected,
-              label: _label(context, brand),
-              child: GestureDetector(
-                onTap: () => onSelected(brand),
-                behavior: HitTestBehavior.opaque,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: DSSpacing.xs),
-                  child: Column(
-                    children: <Widget>[
-                      AnimatedContainer(
-                        duration: DSMotion.fast,
-                        curve: DSMotion.standard,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: brand.seed,
-                          borderRadius: ds.radii.surfaceAll,
-                          border: Border.all(
-                            color: brand == selected
-                                ? ds.colors.onSurface
-                                : ds.colors.separator,
-                            width: brand == selected ? 3 : 1,
-                          ),
-                        ),
-                      ),
-                      const DSGap.xs(),
-                      DSText(
-                        _label(context, brand),
-                        role: DSTextRole.caption,
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            child: _BrandSwatch(
+              brand: brand,
+              isSelected: brand == selected,
+              onTap: () => onSelected(brand),
             ),
           ),
       ],
     );
   }
+}
 
-  static String _label(BuildContext context, DSBrand brand) {
-    final l10n = context.l10n;
-    return switch (brand) {
-      DSBrand.aurora => l10n.brandColorAurora,
-      DSBrand.forest => l10n.brandColorForest,
-      DSBrand.sunset => l10n.brandColorSunset,
-      DSBrand.graphite => l10n.brandColorGraphite,
-    };
+class _BrandSwatch extends StatelessWidget {
+  const _BrandSwatch({
+    required this.brand,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final DSBrand brand;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ds = context.ds;
+    final label = _brandLabel(context, brand);
+
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: label,
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: DSSpacing.xs),
+          child: Column(
+            children: [
+              AnimatedContainer(
+                duration: DSMotion.fast,
+                curve: DSMotion.standard,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: brand.seed,
+                  borderRadius: ds.radii.surfaceAll,
+                  border: Border.all(
+                    color: isSelected
+                        ? ds.colors.onSurface
+                        : ds.colors.separator,
+                    width: isSelected ? 3 : 1,
+                  ),
+                ),
+              ),
+              const DSGap.xs(),
+              DSText(
+                label,
+                role: DSTextRole.caption,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The translated name of a brand.
+String _brandLabel(BuildContext context, DSBrand brand) {
+  final l10n = context.l10n;
+
+  switch (brand) {
+    case DSBrand.aurora:
+      return l10n.brandColorAurora;
+    case DSBrand.forest:
+      return l10n.brandColorForest;
+    case DSBrand.sunset:
+      return l10n.brandColorSunset;
+    case DSBrand.graphite:
+      return l10n.brandColorGraphite;
   }
 }

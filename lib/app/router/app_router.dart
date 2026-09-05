@@ -1,7 +1,6 @@
 import 'package:design_system_flutter/app/application/app_providers.dart';
 import 'package:design_system_flutter/app/router/app_routes.dart';
 import 'package:design_system_flutter/app/widgets/adaptive_shell.dart';
-import 'package:design_system_flutter/design_system/foundations/ds_design_language.dart';
 import 'package:design_system_flutter/features/catalog/domain/component_id.dart';
 import 'package:design_system_flutter/features/catalog/presentation/component_detail_page.dart';
 import 'package:design_system_flutter/features/catalog/presentation/components_page.dart';
@@ -16,85 +15,97 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
+/// The navigation map of the app.
+///
+/// There are two levels:
+///  - `/onboarding` is on its own, with no bottom bar;
+///  - the four tabs live inside a shell route, which keeps one navigation
+///    stack per tab (so leaving and coming back does not lose your place).
+final routerProvider = Provider<GoRouter>((ref) {
+  /// Wraps a page so it animates like the current design language: an iOS
+  /// slide on Cupertino, the Material transition otherwise.
   Page<void> adaptivePage(Widget child, GoRouterState state) {
-    return switch (ref.read(designLanguageProvider)) {
-      DesignLanguage.cupertino => CupertinoPage<void>(
-        key: state.pageKey,
-        child: child,
-      ),
-      DesignLanguage.material => MaterialPage<void>(
-        key: state.pageKey,
-        child: child,
-      ),
-    };
+    final language = ref.read(designLanguageProvider);
+
+    if (language.isCupertino) {
+      return CupertinoPage<void>(key: state.pageKey, child: child);
+    }
+    return MaterialPage<void>(key: state.pageKey, child: child);
   }
 
-  bool hasCompletedOnboarding() =>
-      ref.read(settingsProvider).hasCompletedOnboarding;
+  bool hasCompletedOnboarding() {
+    return ref.read(settingsProvider).hasCompletedOnboarding;
+  }
 
   return GoRouter(
     initialLocation: hasCompletedOnboarding()
         ? AppRoute.foundations.path
         : AppRoute.onboarding.path,
-    debugLogDiagnostics: false,
-    redirect: (BuildContext context, GoRouterState state) {
-      final bool atOnboarding =
-          state.matchedLocation == AppRoute.onboarding.path;
-      if (!hasCompletedOnboarding() && !atOnboarding) {
+    // Runs before every navigation. Returning null means "let it through".
+    //
+    // Note that changing `hasCompletedOnboarding` does not navigate by itself:
+    // whoever changes it also calls `goNamed`. This guard is here to stop
+    // someone reaching the wrong screen by URL.
+    redirect: (context, state) {
+      final isAtOnboarding = state.matchedLocation == AppRoute.onboarding.path;
+
+      if (!hasCompletedOnboarding() && !isAtOnboarding) {
         return AppRoute.onboarding.path;
       }
-      if (hasCompletedOnboarding() && atOnboarding) {
+      if (hasCompletedOnboarding() && isAtOnboarding) {
         return AppRoute.foundations.path;
       }
       return null;
     },
-    routes: <RouteBase>[
+    routes: [
       GoRoute(
         path: AppRoute.onboarding.path,
         name: AppRoute.onboarding.routeName,
-        pageBuilder: (BuildContext context, GoRouterState state) =>
+        pageBuilder: (context, state) =>
             adaptivePage(const OnboardingPage(), state),
       ),
+
+      // One branch per tab. The shell draws the bottom bar (or the side rail)
+      // around whichever branch is selected.
       StatefulShellRoute.indexedStack(
-        builder:
-            (
-              BuildContext context,
-              GoRouterState state,
-              StatefulNavigationShell shell,
-            ) => AdaptiveShell(navigationShell: shell),
-        branches: <StatefulShellBranch>[
+        builder: (context, state, navigationShell) {
+          return AdaptiveShell(navigationShell: navigationShell);
+        },
+        branches: [
           StatefulShellBranch(
-            routes: <RouteBase>[
+            routes: [
               GoRoute(
                 path: AppRoute.foundations.path,
                 name: AppRoute.foundations.routeName,
-                pageBuilder: (BuildContext context, GoRouterState state) =>
+                pageBuilder: (context, state) =>
                     adaptivePage(const FoundationsPage(), state),
               ),
             ],
           ),
           StatefulShellBranch(
-            routes: <RouteBase>[
+            routes: [
               GoRoute(
                 path: AppRoute.components.path,
                 name: AppRoute.components.routeName,
-                pageBuilder: (BuildContext context, GoRouterState state) =>
+                pageBuilder: (context, state) =>
                     adaptivePage(const ComponentsPage(), state),
-                routes: <RouteBase>[
+                routes: [
+                  // A child route, so opening a component pushes the detail
+                  // page on top of the list and the back button appears.
                   GoRoute(
                     path: ':componentId',
                     name: AppRoute.componentDetail.routeName,
-                    pageBuilder: (BuildContext context, GoRouterState state) {
-                      final ComponentId? id = ComponentId.fromSlug(
-                        state.pathParameters['componentId'],
-                      );
+                    pageBuilder: (context, state) {
+                      final slug = state.pathParameters['componentId'];
+                      final componentId = ComponentId.fromSlug(slug);
 
-                      if (id == null) {
+                      // An unknown slug falls back to the list instead of
+                      // crashing.
+                      if (componentId == null) {
                         return adaptivePage(const ComponentsPage(), state);
                       }
                       return adaptivePage(
-                        ComponentDetailPage(componentId: id),
+                        ComponentDetailPage(componentId: componentId),
                         state,
                       );
                     },
@@ -104,21 +115,21 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
             ],
           ),
           StatefulShellBranch(
-            routes: <RouteBase>[
+            routes: [
               GoRoute(
                 path: AppRoute.playground.path,
                 name: AppRoute.playground.routeName,
-                pageBuilder: (BuildContext context, GoRouterState state) =>
+                pageBuilder: (context, state) =>
                     adaptivePage(const PlaygroundPage(), state),
               ),
             ],
           ),
           StatefulShellBranch(
-            routes: <RouteBase>[
+            routes: [
               GoRoute(
                 path: AppRoute.settings.path,
                 name: AppRoute.settings.routeName,
-                pageBuilder: (BuildContext context, GoRouterState state) =>
+                pageBuilder: (context, state) =>
                     adaptivePage(const SettingsPage(), state),
               ),
             ],
@@ -127,4 +138,4 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
       ),
     ],
   );
-}, name: 'router');
+});

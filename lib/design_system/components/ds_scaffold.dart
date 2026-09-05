@@ -4,18 +4,26 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-final class DSScaffold extends StatelessWidget {
+/// The frame of a page: a top bar with a title plus the page content.
+///
+/// It becomes a `Scaffold` on Material and a `CupertinoPageScaffold` on
+/// Cupertino, so the back button and the bar behave natively on both.
+class DSScaffold extends StatelessWidget {
   const DSScaffold({
     required this.title,
     required this.body,
-    this.actions = const <Widget>[],
+    this.actions = const [],
     this.leading,
     super.key,
   });
 
   final String title;
   final Widget body;
+
+  /// Buttons on the right of the top bar.
   final List<Widget> actions;
+
+  /// Replaces the automatic back button when set.
   final Widget? leading;
 
   @override
@@ -44,6 +52,7 @@ final class DSScaffold extends StatelessWidget {
         title: Text(title),
         leading: leading,
         actions: actions,
+        // Only let Flutter add a back button when we did not provide one.
         automaticallyImplyLeading: leading == null,
       ),
       body: SafeArea(bottom: false, child: body),
@@ -51,7 +60,9 @@ final class DSScaffold extends StatelessWidget {
   }
 }
 
-final class DSPageBody extends StatelessWidget {
+/// A scrollable page body that stays centred and never gets too wide to read
+/// comfortably on a tablet or desktop.
+class DSPageBody extends StatelessWidget {
   const DSPageBody({
     required this.children,
     this.padding = const EdgeInsets.all(DSSpacing.lg),
@@ -64,20 +75,23 @@ final class DSPageBody extends StatelessWidget {
   final ScrollController? controller;
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(
-        maxWidth: DSBreakpoints.maxContentWidth,
-      ),
-      child: ListView(
-        controller: controller,
-        padding: padding.add(
-          EdgeInsets.only(
-            bottom: MediaQuery.viewPaddingOf(context).bottom + DSSpacing.xxl,
-          ),
+  Widget build(BuildContext context) {
+    // Extra bottom padding so the last item clears the home indicator.
+    final safeBottom = MediaQuery.viewPaddingOf(context).bottom;
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: DSBreakpoints.maxContentWidth,
         ),
-        children: children,
+        child: ListView(
+          controller: controller,
+          padding: padding.add(
+            EdgeInsets.only(bottom: safeBottom + DSSpacing.xxl),
+          ),
+          children: children,
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

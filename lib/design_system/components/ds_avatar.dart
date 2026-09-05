@@ -1,26 +1,33 @@
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/widgets.dart';
 
-final class DSAvatar extends StatelessWidget {
+/// A round badge with someone's initials.
+class DSAvatar extends StatelessWidget {
   const DSAvatar({required this.name, this.size = 40, super.key});
+
   final String name;
   final double size;
 
+  /// "Ada Lovelace" becomes "AL", "Prince" becomes "P", an empty name "?".
   String get initials {
-    final List<String> parts = name
+    final parts = name
         .trim()
         .split(RegExp(r'\s+'))
-        .where((String part) => part.isNotEmpty)
+        .where((part) => part.isNotEmpty)
         .toList();
+
     if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.characters.first.toUpperCase();
-    return (parts.first.characters.first + parts.last.characters.first)
-        .toUpperCase();
+
+    final first = parts.first.characters.first;
+    final last = parts.last.characters.first;
+    return (first + last).toUpperCase();
   }
 
   @override
   Widget build(BuildContext context) {
     final ds = context.ds;
+
     return Container(
       width: size,
       height: size,

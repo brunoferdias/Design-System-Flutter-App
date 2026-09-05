@@ -1,13 +1,14 @@
-import 'package:design_system_flutter/design_system/foundations/ds_radii.dart';
 import 'package:design_system_flutter/design_system/foundations/ds_spacing.dart';
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
-abstract final class DSMaterialTheme {
+/// Translates our tokens into the theme `MaterialApp` expects, so plain
+/// Material widgets look like the rest of the app.
+class DSMaterialTheme {
   static ThemeData from(DSThemeData ds) {
-    final ColorScheme scheme = ds.colors.materialScheme;
-    final DSRadii radii = ds.radii;
+    final scheme = ds.colors.materialScheme;
+    final radii = ds.radii;
 
     return ThemeData(
       useMaterial3: true,
@@ -43,9 +44,7 @@ abstract final class DSMaterialTheme {
       filledButtonTheme: FilledButtonThemeData(style: _buttonStyle(ds)),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: _buttonStyle(ds).copyWith(
-          side: WidgetStatePropertyAll<BorderSide>(
-            BorderSide(color: ds.colors.border),
-          ),
+          side: WidgetStatePropertyAll(BorderSide(color: ds.colors.border)),
         ),
       ),
       textButtonTheme: TextButtonThemeData(style: _buttonStyle(ds)),
@@ -103,7 +102,7 @@ abstract final class DSMaterialTheme {
         indicatorColor: ds.colors.brandSubtle,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        labelTextStyle: WidgetStatePropertyAll<TextStyle>(ds.typography.label),
+        labelTextStyle: WidgetStatePropertyAll(ds.typography.label),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: ds.colors.surfaceElevated,
@@ -127,9 +126,9 @@ abstract final class DSMaterialTheme {
         inactiveTrackColor: ds.colors.surfaceSunken,
         thumbColor: ds.colors.brand,
       ),
-
+      // Android slides pages forwards; Apple platforms keep the iOS swipe.
       pageTransitionsTheme: const PageTransitionsTheme(
-        builders: <TargetPlatform, PageTransitionsBuilder>{
+        builders: {
           TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
           TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
           TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
@@ -138,37 +137,42 @@ abstract final class DSMaterialTheme {
     );
   }
 
-  static ButtonStyle _buttonStyle(DSThemeData ds) => ButtonStyle(
-    textStyle: WidgetStatePropertyAll<TextStyle>(
-      ds.typography.label.copyWith(fontSize: 14),
-    ),
-    padding: const WidgetStatePropertyAll<EdgeInsetsGeometry>(
-      EdgeInsets.symmetric(horizontal: DSSpacing.xl, vertical: DSSpacing.md),
-    ),
-    minimumSize: const WidgetStatePropertyAll<Size>(Size(0, 48)),
-    shape: WidgetStatePropertyAll<OutlinedBorder>(
-      RoundedRectangleBorder(borderRadius: ds.radii.controlAll),
-    ),
-  );
+  /// One shared shape and size for every Material button.
+  static ButtonStyle _buttonStyle(DSThemeData ds) {
+    return ButtonStyle(
+      textStyle: WidgetStatePropertyAll(
+        ds.typography.label.copyWith(fontSize: 14),
+      ),
+      padding: const WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: DSSpacing.xl, vertical: DSSpacing.md),
+      ),
+      minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
+      shape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(borderRadius: ds.radii.controlAll),
+      ),
+    );
+  }
 
+  /// Maps our eight roles onto the fifteen slots Material expects.
   static TextTheme _textTheme(DSThemeData ds) {
-    final t = ds.typography;
+    final type = ds.typography;
+
     return TextTheme(
-      displayLarge: t.display,
-      displayMedium: t.display,
-      displaySmall: t.display,
-      headlineLarge: t.headline,
-      headlineMedium: t.headline,
-      headlineSmall: t.headline,
-      titleLarge: t.title,
-      titleMedium: t.subtitle,
-      titleSmall: t.subtitle,
-      bodyLarge: t.body,
-      bodyMedium: t.body,
-      bodySmall: t.caption,
-      labelLarge: t.label,
-      labelMedium: t.label,
-      labelSmall: t.caption,
+      displayLarge: type.display,
+      displayMedium: type.display,
+      displaySmall: type.display,
+      headlineLarge: type.headline,
+      headlineMedium: type.headline,
+      headlineSmall: type.headline,
+      titleLarge: type.title,
+      titleMedium: type.subtitle,
+      titleSmall: type.subtitle,
+      bodyLarge: type.body,
+      bodyMedium: type.body,
+      bodySmall: type.caption,
+      labelLarge: type.label,
+      labelMedium: type.label,
+      labelSmall: type.caption,
     );
   }
 }

@@ -1,17 +1,21 @@
 import 'package:design_system_flutter/features/onboarding/domain/onboarding_step.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final NotifierProvider<OnboardingController, OnboardingStep>
-onboardingStepProvider = NotifierProvider<OnboardingController, OnboardingStep>(
-  OnboardingController.new,
-  name: 'onboardingStep',
-);
+/// Which step of the introduction is on screen.
+///
+/// This is not saved to disk: it only lives while the introduction is open.
+final onboardingStepProvider =
+    NotifierProvider<OnboardingController, OnboardingStep>(
+      OnboardingController.new,
+    );
 
-final class OnboardingController extends Notifier<OnboardingStep> {
+/// Moves between the introduction steps.
+///
+/// It also guards the edges, so the page never has to check whether there is a
+/// next or previous step before calling.
+class OnboardingController extends Notifier<OnboardingStep> {
   @override
   OnboardingStep build() => OnboardingStep.welcome;
-
-  void goTo(OnboardingStep step) => state = step;
 
   void next() {
     if (state.isLast) return;
@@ -23,5 +27,8 @@ final class OnboardingController extends Notifier<OnboardingStep> {
     state = OnboardingStep.values[state.position - 1];
   }
 
-  void restart() => state = OnboardingStep.welcome;
+  /// Back to the first step, so a replay does not start where we left off.
+  void restart() {
+    state = OnboardingStep.welcome;
+  }
 }

@@ -1,3 +1,13 @@
+/// The public face of the design system.
+///
+/// Feature code imports only this file:
+///
+/// ```dart
+/// import 'package:design_system_flutter/design_system/design_system.dart';
+/// ```
+///
+/// That is what keeps `material.dart` and `cupertino.dart` out of the features
+/// -- a test in `test/architecture/` checks it.
 library;
 
 export 'package:design_system_flutter/design_system/components/ds_avatar.dart';

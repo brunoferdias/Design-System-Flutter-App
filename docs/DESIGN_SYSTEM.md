@@ -8,7 +8,7 @@ Aurora DS is a token-driven system with two renderings. This document is the con
 DSBrand.seed  ──►  DSColors.fromSeed(seed, brightness, language)
                    DSTypography.of(language)
                    DSRadii.of(language)
-                   DSElevation.of(language)
+                   DSElevation(language)
                           │
                           ▼
                    DSThemeData  ──►  DSMaterialTheme.from(ds)   ──►  ThemeData
