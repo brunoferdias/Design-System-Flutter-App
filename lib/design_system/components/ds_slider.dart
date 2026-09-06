@@ -2,7 +2,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A value picker. Set [divisions] to make it snap to steps.
 class DSSlider extends StatelessWidget {
   const DSSlider({
     required this.value,

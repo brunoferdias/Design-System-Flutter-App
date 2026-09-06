@@ -1,14 +1,12 @@
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/widgets.dart';
 
-/// A round badge with someone's initials.
 class DSAvatar extends StatelessWidget {
   const DSAvatar({required this.name, this.size = 40, super.key});
 
   final String name;
   final double size;
 
-  /// "Ada Lovelace" becomes "AL", "Prince" becomes "P", an empty name "?".
   String get initials {
     final parts = name
         .trim()

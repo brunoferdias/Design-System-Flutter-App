@@ -1,9 +1,5 @@
 import 'package:design_system_flutter/features/catalog/domain/component_id.dart';
 
-/// The snippet shown under each demo.
-///
-/// These are hand written examples of how the component is used in this app --
-/// they are text, not code that runs.
 extension ComponentCode on ComponentId {
   String get codeSample {
     switch (this) {

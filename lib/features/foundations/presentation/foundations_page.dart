@@ -3,10 +3,6 @@ import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// The first tab: shows the design tokens themselves.
-///
-/// Everything on this page is read from the current theme, so changing the
-/// brand or the design language changes what you see here.
 class FoundationsPage extends StatelessWidget {
   const FoundationsPage({super.key});
 
@@ -24,7 +20,6 @@ class FoundationsPage extends StatelessWidget {
           DSText(l10n.foundationsSubtitle, color: ds.colors.onSurfaceMuted),
           const DSGap.md(),
 
-          // A quick summary of what the app is currently rendering with.
           Wrap(
             spacing: DSSpacing.sm,
             runSpacing: DSSpacing.sm,
@@ -82,13 +77,11 @@ class FoundationsPage extends StatelessWidget {
   }
 }
 
-/// Turns a colour into the "#AARRGGBB" text shown under each swatch.
 String _toHex(Color color) {
   final value = color.toARGB32().toRadixString(16).padLeft(8, '0');
   return '#${value.toUpperCase()}';
 }
 
-/// Every colour role, as tappable swatches.
 class _ColorTokens extends StatelessWidget {
   const _ColorTokens();
 
@@ -119,7 +112,6 @@ class _ColorTokens extends StatelessWidget {
   }
 }
 
-/// One colour: the sample, its role name and its hex code. Tapping copies it.
 class _Swatch extends StatelessWidget {
   const _Swatch({required this.role, required this.color});
 
@@ -130,7 +122,6 @@ class _Swatch extends StatelessWidget {
     final hex = _toHex(color);
     await Clipboard.setData(ClipboardData(text: hex));
 
-    // The clipboard call is asynchronous, so the page may be gone by now.
     if (!context.mounted) return;
     DSFeedback.toast(context, context.l10n.commonCopied);
   }
@@ -155,7 +146,6 @@ class _Swatch extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: color,
                   borderRadius: ds.radii.compactAll,
-                  // A border so white on white is still visible.
                   border: Border.all(color: ds.colors.separator),
                 ),
               ),
@@ -175,7 +165,6 @@ class _Swatch extends StatelessWidget {
   }
 }
 
-/// Every text style, written in its own style.
 class _TypographyTokens extends StatelessWidget {
   const _TypographyTokens();
 
@@ -201,7 +190,6 @@ class _TypographyTokens extends StatelessWidget {
     );
   }
 
-  /// For example "14pt - w400 - 20pt line".
   String _describeStyle(TextStyle style) {
     final size = style.fontSize ?? 0;
     final weight = style.fontWeight?.value ?? 400;
@@ -213,7 +201,6 @@ class _TypographyTokens extends StatelessWidget {
   }
 }
 
-/// The spacing scale, drawn as bars whose width is the value itself.
 class _SpacingTokens extends StatelessWidget {
   const _SpacingTokens();
 
@@ -268,7 +255,6 @@ class _SpacingTokens extends StatelessWidget {
   }
 }
 
-/// The corner radii, drawn on identical boxes.
 class _RadiusTokens extends StatelessWidget {
   const _RadiusTokens();
 
@@ -312,7 +298,6 @@ class _RadiusTokens extends StatelessWidget {
   }
 }
 
-/// The shadow levels. On Cupertino they all look flat, which is on purpose.
 class _ElevationTokens extends StatelessWidget {
   const _ElevationTokens();
 
@@ -356,7 +341,6 @@ class _ElevationTokens extends StatelessWidget {
   }
 }
 
-/// The durations, as dots that race across the card when you tap it.
 class _MotionTokens extends StatefulWidget {
   const _MotionTokens();
 
@@ -372,7 +356,6 @@ class _MotionTokensState extends State<_MotionTokens> {
     'slow': DSMotion.slow,
   };
 
-  /// Which side the dots are parked on. Tapping the card flips it.
   bool _isOnTheRight = false;
 
   @override
@@ -395,7 +378,6 @@ class _MotionTokensState extends State<_MotionTokens> {
                   ),
                   Expanded(
                     child: AnimatedAlign(
-                      // Same distance, different duration: that is the point.
                       duration: entry.value,
                       curve: DSMotion.standard,
                       alignment: _isOnTheRight

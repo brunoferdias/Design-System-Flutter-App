@@ -9,10 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// The introduction shown on the first launch.
-///
-/// All five steps live on this one page: changing the step swaps the content
-/// with an animation, it does not navigate anywhere.
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
 
@@ -21,11 +17,8 @@ class OnboardingPage extends ConsumerStatefulWidget {
 }
 
 class _OnboardingPageState extends ConsumerState<OnboardingPage> {
-  /// How fast a swipe has to be before it counts as "next" or "back".
   static const double _swipeThreshold = 240;
 
-  /// Which way the content should slide. Kept here because it is only about
-  /// the animation, not about the step itself.
   bool _isMovingForward = true;
 
   void _goToNextStep() {
@@ -38,10 +31,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     ref.read(onboardingStepProvider.notifier).previous();
   }
 
-  /// Ends the introduction, from the last step or from "Skip".
-  ///
-  /// Saving the flag is not enough to leave the page: the router only checks it
-  /// when a navigation happens, so we navigate ourselves right after.
   void _finish() {
     ref.read(settingsProvider.notifier).completeOnboarding();
     ref.read(onboardingStepProvider.notifier).restart();
@@ -51,8 +40,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   void _onHorizontalDragEnd(DragEndDetails details) {
     final velocity = details.primaryVelocity ?? 0;
 
-    // A negative velocity means the finger moved to the left, which in reading
-    // order means "go forward".
     if (velocity < -_swipeThreshold) _goToNextStep();
     if (velocity > _swipeThreshold) _goToPreviousStep();
   }
@@ -82,7 +69,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 switchInCurve: DSMotion.enter,
                 switchOutCurve: DSMotion.exit,
                 transitionBuilder: (child, animation) {
-                  // The new step slides in from the side we are heading to.
                   final offset = _isMovingForward ? 0.12 : -0.12;
 
                   return FadeTransition(
@@ -96,8 +82,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     ),
                   );
                 },
-                // The key is what tells AnimatedSwitcher that this is a new
-                // step and it should animate.
                 child: OnboardingStepView(key: ValueKey(step), step: step),
               ),
             ),
@@ -119,7 +103,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             ),
             child: Row(
               children: [
-                // There is nothing to go back to on the first step.
                 if (!step.isFirst) ...[
                   Expanded(
                     child: DSButton(
@@ -132,7 +115,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   const DSGap.md(),
                 ],
                 Expanded(
-                  // Twice as wide as "Back", so the main action stands out.
                   flex: 2,
                   child: DSButton(
                     label: step.isLast
@@ -151,7 +133,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 }
 
-/// The row of dots at the bottom. The current step is a wider pill.
 class _StepIndicator extends StatelessWidget {
   const _StepIndicator({required this.currentStep});
 

@@ -4,10 +4,8 @@ import 'package:design_system_flutter/design_system/foundations/ds_spacing.dart'
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/widgets.dart';
 
-/// The meaning of a badge, which decides its colour.
 enum DSBadgeTone { neutral, brand, success, warning, danger, info }
 
-/// A small pill used to tag a status.
 class DSBadge extends StatelessWidget {
   const DSBadge(this.label, {this.tone = DSBadgeTone.neutral, super.key});
 
@@ -21,7 +19,6 @@ class DSBadge extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        // The background is the same colour, just faded.
         color: foreground.withValues(alpha: 0.12),
         borderRadius: DSRadii.pillAll,
       ),

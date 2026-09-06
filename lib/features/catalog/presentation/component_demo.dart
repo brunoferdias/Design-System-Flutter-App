@@ -5,10 +5,6 @@ import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 
-/// Picks the live demo for a component.
-///
-/// Each demo is a small widget below, kept stateful when the example needs to
-/// react to taps.
 class ComponentDemo extends StatelessWidget {
   const ComponentDemo({required this.componentId, super.key});
 
@@ -45,7 +41,6 @@ class ComponentDemo extends StatelessWidget {
   }
 }
 
-/// Every button intent. The first one also toggles its loading state.
 class _ButtonDemo extends StatefulWidget {
   const _ButtonDemo();
 
@@ -92,14 +87,12 @@ class _ButtonDemoState extends State<_ButtonDemo> {
           onPressed: () {},
         ),
         const DSGap.md(),
-        // A null callback is what disables a button.
         DSButton(label: l10n.showcaseDisabled, expand: true, onPressed: null),
       ],
     );
   }
 }
 
-/// The three states of a text field: normal, in error, and disabled.
 class _TextFieldDemo extends StatelessWidget {
   const _TextFieldDemo();
 
@@ -165,7 +158,6 @@ class _SwitchDemoState extends State<_SwitchDemo> {
   }
 }
 
-/// A free-moving slider and one that snaps to five steps.
 class _SliderDemo extends StatefulWidget {
   const _SliderDemo();
 
@@ -234,7 +226,6 @@ class _SegmentedDemoState extends State<_SegmentedDemo> {
   }
 }
 
-/// A plain card and a tappable one.
 class _CardDemo extends StatelessWidget {
   const _CardDemo();
 
@@ -311,7 +302,6 @@ class _ListSectionDemo extends StatelessWidget {
   }
 }
 
-/// Avatars at three sizes, and every badge tone.
 class _AvatarBadgeDemo extends StatelessWidget {
   const _AvatarBadgeDemo();
 
@@ -363,7 +353,6 @@ class _DialogDemo extends StatelessWidget {
       isDestructive: true,
     );
 
-    // We waited for the dialog, so the page may be gone by now.
     if (!context.mounted || !confirmed) return;
     DSFeedback.toast(context, l10n.commonDone);
   }
@@ -408,7 +397,6 @@ class _ActionSheetDemo extends StatelessWidget {
       ],
     );
 
-    // A null choice means the sheet was cancelled.
     if (!context.mounted || choice == null) return;
     DSFeedback.toast(context, choice);
   }

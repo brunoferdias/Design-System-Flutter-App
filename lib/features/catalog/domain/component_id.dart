@@ -1,10 +1,5 @@
-/// The sections the catalogue is split into.
 enum ComponentGroup { actions, inputs, selection, containment, feedback }
 
-/// Every component shown in the catalogue.
-///
-/// The slug is what appears in the URL (`/components/text-field`), so it has to
-/// stay stable even if the enum value is renamed.
 enum ComponentId {
   button('button', ComponentGroup.actions),
   textField('text-field', ComponentGroup.inputs),
@@ -24,8 +19,6 @@ enum ComponentId {
   final String slug;
   final ComponentGroup group;
 
-  /// Finds a component by its slug, or returns null when the URL points at
-  /// something that does not exist.
   static ComponentId? fromSlug(String? slug) {
     if (slug == null) return null;
 

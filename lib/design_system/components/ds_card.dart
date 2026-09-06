@@ -4,7 +4,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A padded, rounded surface. Pass [onTap] to make the whole card tappable.
 class DSCard extends StatelessWidget {
   const DSCard({
     required this.child,
@@ -37,7 +36,6 @@ class DSCard extends StatelessWidget {
 
     if (onTap == null) return surface;
 
-    // Material shows an ink ripple, Cupertino fades the whole card instead.
     if (ds.isCupertino) {
       return CupertinoButton(
         onPressed: onTap,

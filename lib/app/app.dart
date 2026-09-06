@@ -10,11 +10,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// The root of the app.
-///
-/// It watches the settings and rebuilds the whole app when they change, which
-/// is how switching design language, theme, brand or locale takes effect
-/// immediately.
 class AuroraApp extends ConsumerWidget {
   const AuroraApp({super.key});
 
@@ -26,8 +21,6 @@ class AuroraApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final router = ref.watch(routerProvider);
 
-    // "System" has to be turned into a real brightness before we can build the
-    // colours, so we ask the platform what it is currently using.
     final Brightness brightness;
     switch (themeMode) {
       case ThemeMode.light:
@@ -44,8 +37,6 @@ class AuroraApp extends ConsumerWidget {
       brand: brand,
     );
 
-    // DSTheme goes outside the app so that dialogs, sheets and toasts -- which
-    // are drawn in the root overlay -- can still read the tokens.
     return DSTheme(
       data: ds,
       child: designLanguage.isCupertino
@@ -80,8 +71,6 @@ class AuroraApp extends ConsumerWidget {
     );
   }
 
-  /// The first one holds our own translations; the other three translate the
-  /// widgets that come with Flutter.
   static const List<LocalizationsDelegate<Object>> _localizationsDelegates = [
     AppLocalizations.delegate,
     GlobalMaterialLocalizations.delegate,
@@ -90,8 +79,6 @@ class AuroraApp extends ConsumerWidget {
   ];
 }
 
-/// Lets every page be dragged with a mouse or a trackpad too, not just with a
-/// finger, so the app also feels right on desktop and web.
 class _AppScrollBehavior extends CupertinoScrollBehavior {
   const _AppScrollBehavior();
 

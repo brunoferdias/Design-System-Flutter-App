@@ -2,7 +2,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A spinner: the iOS "petals" on Cupertino, a circular bar on Material.
 class DSProgressIndicator extends StatelessWidget {
   const DSProgressIndicator({this.size = 24, super.key});
 

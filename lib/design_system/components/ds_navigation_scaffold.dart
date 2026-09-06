@@ -8,7 +8,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// One entry of the main navigation.
 class DSNavigationDestination {
   const DSNavigationDestination({
     required this.label,
@@ -25,10 +24,6 @@ class DSNavigationDestination {
   }
 }
 
-/// The navigation frame of the app.
-///
-/// On a phone it shows a bottom bar; from a tablet up it shows a side rail
-/// (with labels once the window is wide enough).
 class DSNavigationScaffold extends StatelessWidget {
   const DSNavigationScaffold({
     required this.destinations,
@@ -46,10 +41,8 @@ class DSNavigationScaffold extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onDestinationSelected;
 
-  /// Title shown at the top of the side rail.
   final String railHeader;
 
-  /// The page currently being displayed.
   final Widget child;
 
   @override
@@ -160,7 +153,6 @@ class _CupertinoBottomBar extends StatelessWidget {
   }
 }
 
-/// The side navigation used on tablets and desktops.
 class _Rail extends StatelessWidget {
   const _Rail({
     required this.destinations,
@@ -176,7 +168,6 @@ class _Rail extends StatelessWidget {
   final ValueChanged<int> onSelected;
   final String header;
 
-  /// On the widest windows the rail is wide enough to fit text next to icons.
   final bool showLabels;
 
   final Widget child;
@@ -257,7 +248,6 @@ class _RailItem extends StatelessWidget {
       label: destination.label,
       child: GestureDetector(
         onTap: onTap,
-        // Opaque so the taps land on the padding too, not just on the icon.
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: DSMotion.fast,

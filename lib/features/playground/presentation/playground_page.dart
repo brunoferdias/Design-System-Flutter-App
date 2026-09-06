@@ -6,8 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The third tab: a fake booking form that puts the components together in a
-/// real screen instead of showing them one by one.
 class PlaygroundPage extends ConsumerWidget {
   const PlaygroundPage({super.key});
 
@@ -33,7 +31,6 @@ class PlaygroundPage extends ConsumerWidget {
             autofillHints: const [AutofillHints.name],
             textInputAction: TextInputAction.next,
             onChanged: controller.setName,
-            // The error only appears after the first submit.
             errorText: draft.showValidation && !draft.isNameValid
                 ? l10n.bookingErrorNameRequired
                 : null,
@@ -88,7 +85,6 @@ class PlaygroundPage extends ConsumerWidget {
             value: draft.passengers.toDouble(),
             min: BookingDraft.minPassengers.toDouble(),
             max: BookingDraft.maxPassengers.toDouble(),
-            // One step per passenger.
             divisions: BookingDraft.maxPassengers - BookingDraft.minPassengers,
             semanticLabel: l10n.bookingPassengers,
             onChanged: (value) => controller.setPassengers(value.round()),
@@ -115,7 +111,6 @@ class PlaygroundPage extends ConsumerWidget {
             ],
           ),
 
-          // The total is worked out by the draft itself, not here.
           DSCard(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,13 +143,10 @@ class PlaygroundPage extends ConsumerWidget {
     );
   }
 
-  /// Validates the form, asks for confirmation, then celebrates.
   Future<void> _submit(BuildContext context, WidgetRef ref) async {
     final l10n = context.l10n;
     final controller = ref.read(bookingProvider.notifier);
 
-    // submit() also turns the error messages on, so an invalid form just
-    // lights up and we stop here.
     if (!controller.submit()) return;
 
     final draft = ref.read(bookingProvider);

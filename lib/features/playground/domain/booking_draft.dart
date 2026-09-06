@@ -1,4 +1,3 @@
-/// The travel classes a booking can have, each with its price multiplier.
 enum CabinClass {
   economy(1),
   premium(1.6),
@@ -9,10 +8,6 @@ enum CabinClass {
   final double priceMultiplier;
 }
 
-/// The booking form the user is filling in.
-///
-/// It is immutable and holds both the values and the rules (what is valid, how
-/// much it costs), so the page never has to calculate anything itself.
 class BookingDraft {
   const BookingDraft({
     required this.departure,
@@ -36,13 +31,10 @@ class BookingDraft {
   final bool flexibleFare;
   final DateTime departure;
 
-  /// Errors stay hidden until the user presses the button once, so the form
-  /// does not turn red while it is still being typed in.
   final bool showValidation;
 
   bool get isNameValid => name.trim().isNotEmpty;
 
-  /// Good enough for a demo: something, an @, something, a dot, something.
   bool get isEmailValid {
     return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email.trim());
   }

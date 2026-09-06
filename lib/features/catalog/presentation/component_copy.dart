@@ -5,10 +5,6 @@ import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 
-/// The name, description and icon of each component.
-///
-/// This lives in an extension so [ComponentId] can stay in the domain layer,
-/// free of anything to do with the interface.
 extension ComponentCopy on ComponentId {
   String title(BuildContext context) {
     final l10n = context.l10n;
@@ -72,7 +68,6 @@ extension ComponentCopy on ComponentId {
     }
   }
 
-  /// The icon for the list, in the icon set of the current design language.
   IconData icon(DesignLanguage language) {
     final isCupertino = language.isCupertino;
 
@@ -121,7 +116,6 @@ extension ComponentCopy on ComponentId {
   }
 }
 
-/// The heading of each group in the list.
 extension ComponentGroupCopy on ComponentGroup {
   String title(BuildContext context) {
     final l10n = context.l10n;

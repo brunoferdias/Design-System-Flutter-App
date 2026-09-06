@@ -15,15 +15,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// The navigation map of the app.
-///
-/// There are two levels:
-///  - `/onboarding` is on its own, with no bottom bar;
-///  - the four tabs live inside a shell route, which keeps one navigation
-///    stack per tab (so leaving and coming back does not lose your place).
 final routerProvider = Provider<GoRouter>((ref) {
-  /// Wraps a page so it animates like the current design language: an iOS
-  /// slide on Cupertino, the Material transition otherwise.
   Page<void> adaptivePage(Widget child, GoRouterState state) {
     final language = ref.read(designLanguageProvider);
 
@@ -41,11 +33,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: hasCompletedOnboarding()
         ? AppRoute.foundations.path
         : AppRoute.onboarding.path,
-    // Runs before every navigation. Returning null means "let it through".
-    //
-    // Note that changing `hasCompletedOnboarding` does not navigate by itself:
-    // whoever changes it also calls `goNamed`. This guard is here to stop
-    // someone reaching the wrong screen by URL.
     redirect: (context, state) {
       final isAtOnboarding = state.matchedLocation == AppRoute.onboarding.path;
 
@@ -65,8 +52,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             adaptivePage(const OnboardingPage(), state),
       ),
 
-      // One branch per tab. The shell draws the bottom bar (or the side rail)
-      // around whichever branch is selected.
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return AdaptiveShell(navigationShell: navigationShell);
@@ -90,8 +75,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                 pageBuilder: (context, state) =>
                     adaptivePage(const ComponentsPage(), state),
                 routes: [
-                  // A child route, so opening a component pushes the detail
-                  // page on top of the list and the back button appears.
                   GoRoute(
                     path: ':componentId',
                     name: AppRoute.componentDetail.routeName,
@@ -99,8 +82,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                       final slug = state.pathParameters['componentId'];
                       final componentId = ComponentId.fromSlug(slug);
 
-                      // An unknown slug falls back to the list instead of
-                      // crashing.
                       if (componentId == null) {
                         return adaptivePage(const ComponentsPage(), state);
                       }

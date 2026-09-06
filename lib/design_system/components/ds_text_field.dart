@@ -5,7 +5,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// A text input with a label, an optional hint under it, and an error state.
 class DSTextField extends StatelessWidget {
   const DSTextField({
     required this.label,
@@ -28,11 +27,8 @@ class DSTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? placeholder;
 
-  /// Shown under the field as a hint.
   final String? helperText;
 
-  /// When this is not null the field turns red and shows this message instead
-  /// of [helperText].
   final String? errorText;
 
   final TextInputType? keyboardType;
@@ -59,7 +55,6 @@ class DSTextField extends StatelessWidget {
     );
   }
 
-  /// Material already draws the label, the helper and the error for us.
   Widget _buildMaterial(BuildContext context) {
     return TextField(
       controller: controller,
@@ -81,8 +76,6 @@ class DSTextField extends StatelessWidget {
     );
   }
 
-  /// Cupertino has none of that, so we stack the label, the field and the
-  /// footnote by hand.
   Widget _buildCupertino(BuildContext context) {
     final ds = context.ds;
     final borderColor = _hasError ? ds.colors.danger : ds.colors.border;

@@ -1,6 +1,5 @@
 import 'package:flutter/animation.dart';
 
-/// Durations and curves for every animation in the app.
 class DSMotion {
   static const Duration instant = Duration(milliseconds: 90);
   static const Duration fast = Duration(milliseconds: 160);

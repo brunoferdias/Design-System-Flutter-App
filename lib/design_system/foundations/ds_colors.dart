@@ -2,11 +2,6 @@ import 'package:design_system_flutter/design_system/foundations/ds_design_langua
 import 'package:flutter/material.dart' show Brightness, ColorScheme;
 import 'package:flutter/painting.dart';
 
-/// Every colour the app is allowed to paint with.
-///
-/// Widgets never hardcode a colour: they read a role from here (`brand`,
-/// `danger`, `onSurfaceMuted`, ...) so light/dark and the four brands all work
-/// for free.
 class DSColors {
   const DSColors({
     required this.brightness,
@@ -32,10 +27,6 @@ class DSColors {
     required this.materialScheme,
   });
 
-  /// Generates the palette from a single brand colour.
-  ///
-  /// Material takes its greys from the generated [ColorScheme]; Cupertino uses
-  /// Apple's system greys instead, so an iOS build looks like an iOS app.
   factory DSColors.fromSeed({
     required Color seed,
     required Brightness brightness,
@@ -130,10 +121,8 @@ class DSColors {
   final Color scrim;
   final Color shadow;
 
-  /// Kept so the Material theme can be built from the same seed.
   final ColorScheme materialScheme;
 
-  /// The roles listed on the Foundations page.
   Map<String, Color> get catalogue => {
     'brand': brand,
     'onBrand': onBrand,

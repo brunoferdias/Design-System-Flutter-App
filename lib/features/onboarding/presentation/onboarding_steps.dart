@@ -9,10 +9,6 @@ import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The content of one introduction step.
-///
-/// Every step has the same shape -- artwork, title, text -- and then its own
-/// widget at the bottom.
 class OnboardingStepView extends StatelessWidget {
   const OnboardingStepView({required this.step, super.key});
 
@@ -85,10 +81,6 @@ String _bodyFor(BuildContext context, OnboardingStep step) {
   }
 }
 
-/// The bars at the top of each step.
-///
-/// They are just the theme colours at different heights; the heights depend on
-/// the step, so the artwork changes as you move through the introduction.
 class _StepArtwork extends StatelessWidget {
   const _StepArtwork({required this.step});
 
@@ -116,7 +108,6 @@ class _StepArtwork extends StatelessWidget {
                 duration: DSMotion.slow,
                 curve: DSMotion.standard,
                 margin: const EdgeInsets.symmetric(horizontal: DSSpacing.xxs),
-                // Cycles through four heights so the bars look uneven.
                 height: 32 + ((step.position + i) % 4) * 20,
                 decoration: BoxDecoration(
                   color: palette[i],
@@ -130,7 +121,6 @@ class _StepArtwork extends StatelessWidget {
   }
 }
 
-/// The "you can try this right here" line above an interactive step.
 class _TryItHint extends StatelessWidget {
   const _TryItHint();
 
@@ -161,7 +151,6 @@ class _TryItHint extends StatelessWidget {
   }
 }
 
-/// A card showing what the choice above it does, updated live.
 class _LivePreview extends StatelessWidget {
   const _LivePreview({required this.child});
 
@@ -184,7 +173,6 @@ class _LivePreview extends StatelessWidget {
   }
 }
 
-/// Step 1: what the app is about.
 class _WelcomeContent extends StatelessWidget {
   const _WelcomeContent();
 
@@ -224,8 +212,6 @@ class _WelcomeContent extends StatelessWidget {
   }
 }
 
-/// Step 2: Material or Cupertino. Picking one re-skins the app immediately,
-/// including this very page.
 class _DesignLanguageContent extends ConsumerWidget {
   const _DesignLanguageContent();
 
@@ -283,8 +269,6 @@ class _DesignLanguageContent extends ConsumerWidget {
   }
 }
 
-/// A switch in the preview card that really works, so the user can feel the
-/// difference between the two design languages.
 class _PreviewSwitchRow extends StatefulWidget {
   const _PreviewSwitchRow();
 
@@ -313,7 +297,6 @@ class _PreviewSwitchRowState extends State<_PreviewSwitchRow> {
   }
 }
 
-/// Step 3: light/dark and the brand colour, previewed as a live palette.
 class _AppearanceContent extends ConsumerWidget {
   const _AppearanceContent();
 
@@ -364,8 +347,6 @@ class _AppearanceContent extends ConsumerWidget {
   }
 }
 
-/// Step 4: the language. The preview shows a date and a price, which is where
-/// translation differences are easiest to see.
 class _LanguageContent extends ConsumerWidget {
   const _LanguageContent();
 
@@ -382,8 +363,6 @@ class _LanguageContent extends ConsumerWidget {
         const _TryItHint(),
         const DSGap.md(),
         DSSegmentedControl<AppLanguage>(
-          // The control has no "system" option, so while the user is still on
-          // the default we show English as the selected one.
           value: AppLanguage.supported.contains(settings.language)
               ? settings.language
               : AppLanguage.english,
@@ -421,7 +400,6 @@ class _LanguageContent extends ConsumerWidget {
   }
 }
 
-/// Step 5: what each tab of the app is for.
 class _TourContent extends StatelessWidget {
   const _TourContent();
 

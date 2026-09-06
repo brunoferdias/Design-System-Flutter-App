@@ -2,7 +2,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// An on/off toggle. Pass `onChanged: null` to disable it.
 class DSSwitch extends StatelessWidget {
   const DSSwitch({
     required this.value,
@@ -35,7 +34,6 @@ class DSSwitch extends StatelessWidget {
       );
     }
 
-    // A switch on its own says nothing to a screen reader, so name it.
     if (semanticLabel == null) return control;
     return Semantics(label: semanticLabel, child: control);
   }

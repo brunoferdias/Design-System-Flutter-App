@@ -1,9 +1,6 @@
 import 'package:design_system_flutter/design_system/foundations/ds_spacing.dart';
 import 'package:flutter/widgets.dart';
 
-/// Empty space between two widgets, always taken from the spacing scale.
-///
-/// It is square, so the same widget works inside a `Row` and a `Column`.
 class DSGap extends StatelessWidget {
   const DSGap(this.size, {super.key});
 

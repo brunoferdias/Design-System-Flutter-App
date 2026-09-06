@@ -4,7 +4,6 @@ import 'package:design_system_flutter/design_system/foundations/ds_spacing.dart'
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/widgets.dart';
 
-/// A title (and optional explanation) that starts a new block on a page.
 class DSSectionHeader extends StatelessWidget {
   const DSSectionHeader({
     required this.title,
@@ -16,7 +15,6 @@ class DSSectionHeader extends StatelessWidget {
   final String title;
   final String? description;
 
-  /// Set this to 0 when the header is the first thing on the page.
   final double topPadding;
 
   @override

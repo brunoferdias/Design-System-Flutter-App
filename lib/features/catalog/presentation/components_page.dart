@@ -6,7 +6,6 @@ import 'package:design_system_flutter/features/catalog/presentation/component_co
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-/// The second tab: the list of components, grouped by what they are for.
 class ComponentsPage extends StatelessWidget {
   const ComponentsPage({super.key});
 
@@ -33,8 +32,6 @@ class ComponentsPage extends StatelessWidget {
                     title: id.title(context),
                     subtitle: id.description(context),
                     leading: id.icon(language),
-                    // The detail page is a child route, so this pushes on top
-                    // of the list and the back button appears by itself.
                     onTap: () => context.goNamed(
                       AppRoute.componentDetail.routeName,
                       pathParameters: {'componentId': id.slug},

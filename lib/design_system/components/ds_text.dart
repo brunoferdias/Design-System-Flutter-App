@@ -1,8 +1,6 @@
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/widgets.dart';
 
-/// What a piece of text is for. The role picks the style, so screens never
-/// set a font size by hand.
 enum DSTextRole {
   display,
   headline,
@@ -14,7 +12,6 @@ enum DSTextRole {
   caption,
 }
 
-/// A `Text` that already knows the app's typography.
 class DSText extends StatelessWidget {
   const DSText(
     this.data, {
@@ -45,7 +42,6 @@ class DSText extends StatelessWidget {
       data,
       style: style,
       textAlign: textAlign,
-      // When the text is limited to a few lines, cut it with "..." by default.
       maxLines: maxLines,
       overflow: overflow ?? (maxLines != null ? TextOverflow.ellipsis : null),
     );

@@ -3,8 +3,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
-/// Translates our tokens into the theme `MaterialApp` expects, so plain
-/// Material widgets look like the rest of the app.
 class DSMaterialTheme {
   static ThemeData from(DSThemeData ds) {
     final scheme = ds.colors.materialScheme;
@@ -126,7 +124,6 @@ class DSMaterialTheme {
         inactiveTrackColor: ds.colors.surfaceSunken,
         thumbColor: ds.colors.brand,
       ),
-      // Android slides pages forwards; Apple platforms keep the iOS swipe.
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
@@ -137,7 +134,6 @@ class DSMaterialTheme {
     );
   }
 
-  /// One shared shape and size for every Material button.
   static ButtonStyle _buttonStyle(DSThemeData ds) {
     return ButtonStyle(
       textStyle: WidgetStatePropertyAll(
@@ -153,7 +149,6 @@ class DSMaterialTheme {
     );
   }
 
-  /// Maps our eight roles onto the fifteen slots Material expects.
   static TextTheme _textTheme(DSThemeData ds) {
     final type = ds.typography;
 

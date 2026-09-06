@@ -2,7 +2,6 @@ import 'package:design_system_flutter/core/extensions/build_context_x.dart';
 import 'package:design_system_flutter/design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 
-/// The four brand colours, side by side. The selected one gets a thick border.
 class BrandPicker extends StatelessWidget {
   const BrandPicker({
     required this.selected,
@@ -18,7 +17,6 @@ class BrandPicker extends StatelessWidget {
     return Row(
       children: [
         for (final brand in DSBrand.values)
-          // Expanded so the four swatches share the width evenly.
           Expanded(
             child: _BrandSwatch(
               brand: brand,
@@ -88,7 +86,6 @@ class _BrandSwatch extends StatelessWidget {
   }
 }
 
-/// The translated name of a brand.
 String _brandLabel(BuildContext context, DSBrand brand) {
   final l10n = context.l10n;
 

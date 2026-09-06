@@ -6,7 +6,6 @@ import 'package:design_system_flutter/features/catalog/presentation/component_co
 import 'package:design_system_flutter/features/catalog/presentation/component_demo.dart';
 import 'package:flutter/widgets.dart';
 
-/// One component: what it is, a demo you can play with, and the code to copy.
 class ComponentDetailPage extends StatelessWidget {
   const ComponentDetailPage({required this.componentId, super.key});
 
@@ -49,8 +48,6 @@ class ComponentDetailPage extends StatelessWidget {
   }
 }
 
-/// The code sample, in a monospaced box that scrolls sideways so long lines
-/// are never wrapped in the middle.
 class _CodeBlock extends StatelessWidget {
   const _CodeBlock({required this.code});
 

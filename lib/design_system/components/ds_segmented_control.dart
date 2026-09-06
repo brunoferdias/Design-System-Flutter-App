@@ -3,7 +3,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// One option of a [DSSegmentedControl].
 class DSSegment<T> {
   const DSSegment({required this.value, required this.label, this.icon});
 
@@ -12,9 +11,6 @@ class DSSegment<T> {
   final IconData? icon;
 }
 
-/// A row of options where exactly one is selected, like a set of tabs.
-///
-/// `T` is the type of the value each option carries, for example an enum.
 class DSSegmentedControl<T extends Object> extends StatelessWidget {
   const DSSegmentedControl({
     required this.segments,
@@ -28,7 +24,6 @@ class DSSegmentedControl<T extends Object> extends StatelessWidget {
 
   final List<DSSegment<T>> segments;
 
-  /// The option that is currently selected.
   final T value;
   final ValueChanged<T> onChanged;
 
@@ -44,7 +39,6 @@ class DSSegmentedControl<T extends Object> extends StatelessWidget {
           backgroundColor: ds.colors.surfaceSunken,
           thumbColor: ds.colors.surfaceElevated,
           padding: const EdgeInsets.all(DSSpacing.xxs),
-          // Cupertino can report null (nothing selected); we ignore that.
           onValueChanged: (next) {
             if (next != null) onChanged(next);
           },
@@ -76,7 +70,6 @@ class DSSegmentedControl<T extends Object> extends StatelessWidget {
               icon: segment.icon == null ? null : Icon(segment.icon),
             ),
         ],
-        // Material supports multiple selection; we always use a single value.
         selected: {value},
         showSelectedIcon: false,
         onSelectionChanged: (selection) => onChanged(selection.first),

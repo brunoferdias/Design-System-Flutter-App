@@ -1,8 +1,6 @@
 import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 
-/// Translates our tokens into the theme `CupertinoApp` expects, so plain
-/// Cupertino widgets look like the rest of the app.
 class DSCupertinoTheme {
   static CupertinoThemeData from(DSThemeData ds) {
     return CupertinoThemeData(

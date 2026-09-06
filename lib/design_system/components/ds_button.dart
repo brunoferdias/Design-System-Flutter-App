@@ -4,25 +4,8 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// How important a button is, which decides how it is painted.
-enum DSButtonIntent {
-  /// The main action of the screen: filled with the brand colour.
-  primary,
+enum DSButtonIntent { primary, secondary, tertiary, destructive }
 
-  /// A supporting action: outlined.
-  secondary,
-
-  /// A low-key action: text only.
-  tertiary,
-
-  /// Something the user cannot undo: filled in red.
-  destructive,
-}
-
-/// A button that renders as a Material button or a Cupertino one, depending on
-/// the design language.
-///
-/// Pass `onPressed: null` to disable it.
 class DSButton extends StatelessWidget {
   const DSButton({
     required this.label,
@@ -39,16 +22,12 @@ class DSButton extends StatelessWidget {
   final DSButtonIntent intent;
   final IconData? icon;
 
-  /// Replaces the label with a spinner and blocks taps.
   final bool isLoading;
 
-  /// Makes the button as wide as its parent.
   final bool expand;
 
-  /// While loading the button must not react to taps either.
   bool get _isEnabled => onPressed != null && !isLoading;
 
-  /// The callback we actually hand to the underlying button.
   VoidCallback? get _effectiveOnPressed => _isEnabled ? onPressed : null;
 
   @override
@@ -121,7 +100,6 @@ class DSButton extends StatelessWidget {
           child: _content(context, foreground: ds.colors.onDanger),
         );
       case DSButtonIntent.secondary:
-        // Cupertino has no outlined button, so we draw the border ourselves.
         return CupertinoButton(
           onPressed: _effectiveOnPressed,
           borderRadius: radius,
@@ -148,7 +126,6 @@ class DSButton extends StatelessWidget {
     }
   }
 
-  /// What goes inside the button: a spinner, a label, or an icon plus a label.
   Widget _content(BuildContext context, {required Color foreground}) {
     final ds = context.ds;
     final color = _isEnabled ? foreground : foreground.withValues(alpha: 0.4);
@@ -182,7 +159,6 @@ class DSButton extends StatelessWidget {
   }
 }
 
-/// A tappable icon, sized to stay inside the 44dp minimum touch target.
 class DSIconButton extends StatelessWidget {
   const DSIconButton({
     required this.icon,
@@ -194,7 +170,6 @@ class DSIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
 
-  /// Read out loud by screen readers, and shown as a tooltip on Material.
   final String semanticLabel;
 
   @override

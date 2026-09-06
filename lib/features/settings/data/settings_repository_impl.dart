@@ -4,10 +4,6 @@ import 'package:design_system_flutter/features/settings/data/key_value_store.dar
 import 'package:design_system_flutter/features/settings/domain/app_settings.dart';
 import 'package:design_system_flutter/features/settings/domain/settings_repository.dart';
 
-/// Saves and reads [AppSettings] as plain strings.
-///
-/// Every enum is stored by its `name` ("dark", "forest", ...), which keeps the
-/// stored data readable and survives reordering the enum values.
 class SettingsRepositoryImpl implements SettingsRepository {
   const SettingsRepositoryImpl(this._store);
 
@@ -63,10 +59,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
     await _store.remove(_onboardingKey);
   }
 
-  /// Finds the enum value whose `name` was stored.
-  ///
-  /// Returns [fallback] when nothing was saved yet, or when the saved text no
-  /// longer matches any value (for example after a rename).
   T _readEnum<T extends Enum>(String key, List<T> values, T fallback) {
     final stored = _store.readString(key);
     if (stored == null) return fallback;

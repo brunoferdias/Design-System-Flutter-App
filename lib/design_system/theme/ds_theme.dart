@@ -6,9 +6,6 @@ import 'package:design_system_flutter/design_system/foundations/ds_radii.dart';
 import 'package:design_system_flutter/design_system/foundations/ds_typography.dart';
 import 'package:flutter/widgets.dart';
 
-/// All the design tokens, resolved for the current settings.
-///
-/// Widgets read this with `context.ds`.
 class DSThemeData {
   const DSThemeData({
     required this.designLanguage,
@@ -19,8 +16,6 @@ class DSThemeData {
     required this.elevation,
   });
 
-  /// Builds the tokens for one combination of design language, brightness and
-  /// brand. This runs again every time the user changes any of the three.
   factory DSThemeData.resolve({
     required DesignLanguage designLanguage,
     required Brightness brightness,
@@ -55,14 +50,10 @@ class DSThemeData {
 
   bool get isCupertino => designLanguage.isCupertino;
 
-  /// Picks one of two values based on the design language, so widgets can write
-  /// `ds.select(material: Icons.check, cupertino: CupertinoIcons.check_mark)`.
   T select<T>({required T material, required T cupertino}) {
     return isCupertino ? cupertino : material;
   }
 
-  // Two DSThemeData are the same when they were resolved from the same three
-  // inputs -- that is what decides whether widgets need to rebuild.
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -76,7 +67,6 @@ class DSThemeData {
   int get hashCode => Object.hash(designLanguage, brand, brightness);
 }
 
-/// Puts [DSThemeData] in the widget tree so any widget below can read it.
 class DSTheme extends InheritedWidget {
   const DSTheme({required this.data, required super.child, super.key});
 

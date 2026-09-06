@@ -12,10 +12,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// The fourth tab: every preference, plus the "about" section.
-///
-/// The page only reads the settings and calls the controller; it never saves
-/// anything itself.
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -33,7 +29,6 @@ class SettingsPage extends ConsumerWidget {
           DSSectionHeader(
             title: l10n.settingsSectionDesignLanguage,
             description: l10n.settingsDesignLanguageDescription,
-            // No space above: this is the first thing on the page.
             topPadding: 0,
           ),
           DSSegmentedControl<DesignLanguagePreference>(
@@ -55,8 +50,6 @@ class SettingsPage extends ConsumerWidget {
             ],
           ),
           const DSGap.md(),
-          // "Automatic" does not say which one won, so we spell it out. The
-          // live region makes screen readers announce the change.
           Semantics(
             liveRegion: true,
             child: DSText(
@@ -107,7 +100,6 @@ class SettingsPage extends ConsumerWidget {
               for (final language in AppLanguage.values)
                 DSListRow(
                   title: _languageLabel(context, language),
-                  // A tick marks the one in use.
                   leading: settings.language == language
                       ? ds.select(
                           material: Icons.check,
@@ -144,8 +136,6 @@ class SettingsPage extends ConsumerWidget {
                   material: Icons.slideshow_outlined,
                   cupertino: CupertinoIcons.play_rectangle,
                 ),
-                // Clearing the flag is not enough: the router only reads it
-                // during a navigation, so we also navigate.
                 onTap: () {
                   controller.replayOnboarding();
                   context.goNamed(AppRoute.onboarding.routeName);
@@ -174,7 +164,6 @@ class SettingsPage extends ConsumerWidget {
     DSFeedback.toast(context, context.l10n.commonCopied);
   }
 
-  /// Resetting cannot be undone, so we ask first.
   Future<void> _confirmReset(
     BuildContext context,
     SettingsController controller,
@@ -193,8 +182,6 @@ class SettingsPage extends ConsumerWidget {
 
     await controller.reset();
 
-    // Both the dialog and the reset were awaited, so check the page is still
-    // there before showing the toast.
     if (!context.mounted) return;
     DSFeedback.toast(context, l10n.settingsResetDone);
   }

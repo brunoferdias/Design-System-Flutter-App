@@ -4,10 +4,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// The frame of a page: a top bar with a title plus the page content.
-///
-/// It becomes a `Scaffold` on Material and a `CupertinoPageScaffold` on
-/// Cupertino, so the back button and the bar behave natively on both.
 class DSScaffold extends StatelessWidget {
   const DSScaffold({
     required this.title,
@@ -20,10 +16,8 @@ class DSScaffold extends StatelessWidget {
   final String title;
   final Widget body;
 
-  /// Buttons on the right of the top bar.
   final List<Widget> actions;
 
-  /// Replaces the automatic back button when set.
   final Widget? leading;
 
   @override
@@ -52,7 +46,6 @@ class DSScaffold extends StatelessWidget {
         title: Text(title),
         leading: leading,
         actions: actions,
-        // Only let Flutter add a back button when we did not provide one.
         automaticallyImplyLeading: leading == null,
       ),
       body: SafeArea(bottom: false, child: body),
@@ -60,8 +53,6 @@ class DSScaffold extends StatelessWidget {
   }
 }
 
-/// A scrollable page body that stays centred and never gets too wide to read
-/// comfortably on a tablet or desktop.
 class DSPageBody extends StatelessWidget {
   const DSPageBody({
     required this.children,
@@ -76,7 +67,6 @@ class DSPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extra bottom padding so the last item clears the home indicator.
     final safeBottom = MediaQuery.viewPaddingOf(context).bottom;
 
     return Center(

@@ -4,10 +4,6 @@ import 'package:design_system_flutter/design_system/theme/ds_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// The data of one line inside a [DSListSection].
-///
-/// It is a plain class, not a widget: the section decides how to draw it on
-/// Material and on Cupertino.
 class DSListRow {
   const DSListRow({
     required this.title,
@@ -22,22 +18,17 @@ class DSListRow {
   final String title;
   final String? subtitle;
 
-  /// Icon shown before the title.
   final IconData? leading;
 
-  /// Widget shown at the end of the row, for example a switch.
   final Widget? trailing;
 
-  /// Grey text shown at the end of the row, for example the current value.
   final String? additionalInfo;
 
   final VoidCallback? onTap;
 
-  /// Paints the row in red, for actions like "Delete".
   final bool isDestructive;
 }
 
-/// A group of rows with an optional header and footer.
 class DSListSection extends StatelessWidget {
   const DSListSection({
     required this.rows,
@@ -56,7 +47,6 @@ class DSListSection extends StatelessWidget {
     return _buildMaterial(context);
   }
 
-  /// Cupertino already has inset grouped lists, so we only feed it our colours.
   Widget _buildCupertino(BuildContext context) {
     final ds = context.ds;
 
@@ -104,7 +94,6 @@ class DSListSection extends StatelessWidget {
             additionalInfo: row.additionalInfo == null
                 ? null
                 : _TrailingInfo(text: row.additionalInfo!),
-            // A tappable row without a custom trailing gets the iOS chevron.
             trailing:
                 row.trailing ??
                 (row.onTap == null ? null : const CupertinoListTileChevron()),
@@ -113,7 +102,6 @@ class DSListSection extends StatelessWidget {
     );
   }
 
-  /// Material has no grouped list, so we build a card with dividers.
   Widget _buildMaterial(BuildContext context) {
     final ds = context.ds;
 
@@ -141,7 +129,6 @@ class DSListSection extends StatelessWidget {
             child: Column(
               children: [
                 for (var i = 0; i < rows.length; i++) ...[
-                  // A divider between rows, but not above the first one.
                   if (i > 0) const Divider(height: 1, indent: DSSpacing.lg),
                   _MaterialRow(row: rows[i]),
                 ],
@@ -168,7 +155,6 @@ class DSListSection extends StatelessWidget {
   }
 }
 
-/// One [DSListRow] drawn as a Material `ListTile`.
 class _MaterialRow extends StatelessWidget {
   const _MaterialRow({required this.row});
 
@@ -201,8 +187,6 @@ class _MaterialRow extends StatelessWidget {
     );
   }
 
-  /// A custom widget wins; then the grey text; otherwise a tappable row gets
-  /// a chevron and everything else gets nothing.
   Widget? _buildTrailing(DSThemeData ds) {
     if (row.trailing != null) return row.trailing;
     if (row.additionalInfo != null) {
@@ -215,8 +199,6 @@ class _MaterialRow extends StatelessWidget {
   }
 }
 
-/// The grey text at the end of a row, capped so a long value wraps instead of
-/// squeezing the title.
 class _TrailingInfo extends StatelessWidget {
   const _TrailingInfo({required this.text});
 
